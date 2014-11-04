@@ -15,22 +15,20 @@ sigma_theta = 0.01*(pi/180); % 0.01 deg (converted to rad)
 T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
 
-% rsc1 = latlong2ECEF(llh(1,1),llh(1,2),llh(1,3))';
-%
 theta = (7.292e-5);%*(t(k+1)-t(k));
 T_ei = [cos(theta) -sin(theta) 0;
     sin(theta) cos(theta) 0;
     0 0 1];
 % rsc = T_ei*rsc1;
 
-rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
-rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
+rsc = T_ei*xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
+rscdot = T_ei*xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
 x = [rsc; rscdot]; % create initial state matrix
 P = [sigma_pos^2*eye(3), zeros(3); zeros(3), sigma_vel^2*eye(3)]; % create initial P matrix
 z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
 
 n = 60;
-for k_old =1:n:length(t)
+for k_old = 1:n:length(t)
     
     if k_old+1 > length(t)
         break
@@ -43,28 +41,24 @@ for k_old =1:n:length(t)
     end
     
     % Landmark Observation
-    [lat_obs,long_obs,height_obs] =  ECEF2latlong(Position(k,1),Position(k_old,2),Position(k_old,3));
+    [lat_obs,long_obs,height_obs] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
 %     llh = [lat' long' height'];
       
     % Integrate State and Covariance from tk-1 to tk
-    [t1, z1] = ode45(@integrate,t(k):1:t(k+1),z,options); % integrate z to find xdot and Pdot
-    z = z1(end,:);
+    [t1, z1] = ode45(@integrate,t(k_old):1:t(k_old+n),z,options); % integrate z to find xdot and Pdot
+    zminus = z1(end,:);
     
     % Check error between true and estimate
-    xest(:,k) = [z(1) z(2) z(3) z(4) z(5) z(6)]';
-    err_pos(:,k) = xtrue(1:6,k+1)-xest(:,k);
+    xest(:,k) = [zminus(1) zminus(2) zminus(3) zminus(4) zminus(5) zminus(6)]';
+    err_pos(:,k) = xtrue(1:6,k_old+n)-xest(:,k);
 
     % Obtain Estimated State Values
-    xhatminus(:,k) = [z(1:6)]';
-    Pminus = reshape(z(:,7:42),6,6); % reshape into 6x6 matrix
+    xhatminus(:,k) = [zminus(1:6)]';
+    Pminus = reshape(zminus(:,7:42),6,6); % reshape into 6x6 matrix
     
     %%% Update Measurement %%%
     
-    theta = (7.292e-5)*(t(k_old+1)-t(k_old));
-    T_ei = [cos(theta) -sin(theta) 0;
-        sin(theta) cos(theta) 0;
-        0 0 1];
-    [ox, oy, oz] = geo2ECI(lat_obs,long_obs,0); % vector of landmark
+    [ox, oy, oz] = geo2ECI(lat_obs,long_obs,height_obs); % vector of landmark
     %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
     o = [ox; oy; oz];
     
@@ -95,7 +89,7 @@ for k_old =1:n:length(t)
     Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
     
     PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector
-    errX(:,k) = [xhatplus(1:3,k)-xtrue(1:3,k+1); (xhatplus(4:6,k)-xtrue(4:6,k+1))]; % Plot error
+    errX(:,k) = [xhatplus(1:3,k)-xtrue(1:3,k_old+n); (xhatplus(4:6,k)-xtrue(4:6,k_old+n))]; % Plot error
     
     x = xhatplus(:,k); % update state measurement
     P = Pplus; % update covariance measurement
@@ -103,46 +97,62 @@ for k_old =1:n:length(t)
     
 end
 
-% errX = err_pos;
+%%
+figure(1),hold on, plot(xest(1,:),'r*'), plot(xhatminus(1,:),'bo'),plot(xhatplus(1,:),'gd'),plot(xtrue(1,:),'kx')
+title('X Position')
+figure(2),hold on, plot(xest(2,:),'r*'), plot(xhatminus(2,:),'bo'),plot(xhatplus(2,:),'gd'),plot(xtrue(2,:),'kx')
+title('Y Position')
+figure(3),hold on, plot(xest(3,:),'r*'), plot(xhatminus(3,:),'bo'),plot(xhatplus(3,:),'gd'),plot(xtrue(3,:),'kx')
+title('Z Position')
+figure(4),hold on, plot(xest(4,:),'r*'), plot(xhatminus(4,:),'bo'),plot(xhatplus(4,:),'gd'),plot(xtrue(4,:),'kx')
+title('X Velocity')
+figure(5),hold on, plot(xest(5,:),'r*'), plot(xhatminus(5,:),'bo'),plot(xhatplus(5,:),'gd'),plot(xtrue(5,:),'kx')
+title('Y Velocity')
+figure(6),hold on, plot(xest(6,:),'r*'), plot(xhatminus(6,:),'bo'),plot(xhatplus(6,:),'gd'),plot(xtrue(6,:),'kx')
+title('Z Velocity')
 
+%%
+
+% % errX = err_pos;
+% 
+% % figure
+% % hold on
+% % plot(xtrue(1,:),'g')
+% % plot(xest(1,:),'go')
+% % plot(xtrue(2,:),'b')
+% % plot(xest(2,:),'bo')
+% % plot(xtrue(3,:),'r')
+% % plot(xest(3,:),'ro')
 % figure
-% hold on
-% plot(xtrue(1,:),'g')
-% plot(xest(1,:),'go')
-% plot(xtrue(2,:),'b')
-% plot(xest(2,:),'bo')
-% plot(xtrue(3,:),'r')
-% plot(xest(3,:),'ro')
-figure
-subplot(3,1,1),plot(errX(1,:))
-title('Error in X Position (m)')
-xlabel('Time (min)')
-ylabel('Magnitude (m)')
-
-subplot(3,1,2),plot(errX(2,:))
-title('Error in Y Position (m)')
-xlabel('Time (min)')
-ylabel('Magnitude (m)')
-
-subplot(3,1,3),plot(errX(3,:))
-title('Error in Z Position (m)')
-xlabel('Time (min)')
-ylabel('Magnitude (m)')
-
-figure
-subplot(3,1,1),plot(errX(4,:))
-title('Error in X Velocity (m/s)')
-xlabel('Time (min)')
-ylabel('Magnitude (m/s)')
-
-subplot(3,1,2),plot(errX(5,:))
-title('Error in Y Velocity (m/s)')
-xlabel('Time (min)')
-ylabel('Magnitude (m/s)')
-
-subplot(3,1,3),plot(errX(6,:))
-title('Error in Z Velocity (m/s)')
-xlabel('Time (min)')
-ylabel('Magnitude (m/s)')
-
+% subplot(3,1,1),plot(errX(1,:))
+% title('Error in X Position (m)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m)')
+% 
+% subplot(3,1,2),plot(errX(2,:))
+% title('Error in Y Position (m)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m)')
+% 
+% subplot(3,1,3),plot(errX(3,:))
+% title('Error in Z Position (m)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m)')
+% 
+% figure
+% subplot(3,1,1),plot(errX(4,:))
+% title('Error in X Velocity (m/s)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m/s)')
+% 
+% subplot(3,1,2),plot(errX(5,:))
+% title('Error in Y Velocity (m/s)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m/s)')
+% 
+% subplot(3,1,3),plot(errX(6,:))
+% title('Error in Z Velocity (m/s)')
+% xlabel('Time (min)')
+% ylabel('Magnitude (m/s)')
+% 
 
