@@ -5,7 +5,7 @@ rsc = z(1:3);
 rscdot = z(4:6);
 P = reshape(z(7:42),6,6);
 
-sigmaQ = 1e-7; % standard deviation of state measurement
+sigmaQ = 1e-5; % standard deviation of state measurement
 Q = [zeros(3,6); zeros(3), sigmaQ^2*eye(3)];
 
 rsc_norm = norm(rsc);

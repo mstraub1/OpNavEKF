@@ -12,10 +12,15 @@
 
 function [ T ] = v_to_T( v )
 
-theta = norm(v);
-etheta(:,1) = v/theta;
 
-T = cos(theta)*eye(3) + (1-cos(theta))*(etheta*etheta') - sin(theta)*crossmat(etheta);
+if norm(v) < 1e-14
+    T = eye(3);
+else
+    theta = norm(v);
+    etheta(:,1) = v/theta;
+    
+    T = cos(theta)*eye(3) + (1-cos(theta))*(etheta*etheta') - sin(theta)*crossmat(etheta);
+end
 
 end
 
