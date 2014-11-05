@@ -43,7 +43,8 @@ FOV = (pi/180)*30; % deg
 GIFOV = 2*height*tan(FOV/2); % km
 FOV_new = adjustFOV(GIFOV); % adjust to Matlab's scale [deg]
 
-for k = 21301 %1:60:length(t) %21301% = Great Lakes
+n = 5*60;
+for k = 1:n:length(t) %21301% = Great Lakes
     if k+1 > length(t)
         break
     end
@@ -100,14 +101,16 @@ end
 
 figure
 hold on
-plot(long,lat,'k','LineWidth',1)
-plot(coast_plot(:,1),coast_plot(:,2),'r*')
-for k = 1:100:length(longbound)
+plot(long,lat,'k','LineWidth',1.25)
+% plot(coast_plot(:,1),coast_plot(:,2),'r*')
+plot(long_calc(1,1:end), lat_calc(1,1:end),'.','MarkerSize',0.5,'Color',[0.6, 0.6, 0.6])
+for k = 1:n:length(longbound)
     hold on
-    plot([longbound(k,:) longbound(k,1)],[latbound(k,:) latbound(k,1)],'Color',[0.8, 0.8, 0.8],'LineWidth',1.5);
+    plot([longbound(k,:) longbound(k,1)],[latbound(k,:) latbound(k,1)],'b','LineWidth',1,'Color',[0.8, 0.8, 0.8]);
 end
 
 % axis equal
+% title('Simulated Earth Coverage based on ISS orbit at 51.6^{\circ} inclination, 1000 km altitude with images taken once every 5 minutes')
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
 % axis([-180 180 -90 90])

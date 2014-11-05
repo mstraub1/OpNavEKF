@@ -1,6 +1,6 @@
 % scdatawithrot 
 clc, clear
-% close all
+close all
 
 load coord.mat;
 
@@ -9,7 +9,7 @@ height = 1000*1000; % height above Earth (m) (assume circular orbit at 500 km)
 Rearth = 1000*6378; % radius of Earth (m)
 alt = Rearth+height; % altitude of orbit (m)
 e = 0; % eccentricity (rad) (circular orbit = 0)
-i = 90*(pi/180); % inclination in rad (polar orbit = 90 deg)
+i = 51.6*(pi/180); % inclination in rad (polar orbit = 90 deg)
 w = 0; % right ascension of ascending node (rad)
 Omega = 0; % argument of periapsis (rad)
 nu = 0; % true anomaly (rad)
@@ -26,6 +26,7 @@ V = Pos(:,4:6);
 angvel = 7.292e-5; % angular velocity of Earth (rad/s)
 
 % include Earth's rotation in calculations
+n = 5*60;
 for m = 1:length(t1)
 
     if m+1 > length(t1)
@@ -63,9 +64,9 @@ grid on
 axis equal
 % 
 figure
-plot(long,lat)
+plot(long,lat,'k')
 hold on
-plot(long_calc(1:1*60:end),lat_calc(1:1*60:end),'go')
+plot(long_calc(1:n:end),lat_calc(1:n:end),'*')
 % 
 % save data to load later
 save('scdatawithrot.mat','t','options','height','Rearth','alt','e','i','w','Omega','nu','Pos_rot','Vel_rot','lat_calc','long_calc')
