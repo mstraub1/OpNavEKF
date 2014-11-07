@@ -69,7 +69,7 @@ for mc = 1 % for monte carlo analysis
         Pminus = 0.5*(Pminus + Pminus');
         %%% Update Measurement %%%
         
-        [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
+        [ox, oy, oz] = geo2ECI(lat_obs,long_obs,height_obs); % vector of landmark
         %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
         o = [ox; oy; oz];
         
@@ -78,7 +78,7 @@ for mc = 1 % for monte carlo analysis
         eI_true = s_true/norm(s_true);
         y_true = T_IC*eI_true;
         
-        dv = sigma_theta*randn(3,1); % generate random noise for position vector
+        dv = 0*sigma_theta*randn(3,1); % generate random noise for position vector
         dT = v_to_T(dv); % rotation matrix based on random noise in position vector of camera
         y = dT*y_true;
         
@@ -103,7 +103,7 @@ for mc = 1 % for monte carlo analysis
         
         K = (Pminus*H')/((H*Pminus*H'+R+(0.5*trace(R))*(eI*eI'))); % find optimal Kalman gain
         
-        xhatplus(:,k) = xhatminus(:,k) + K*(y-h); % state update
+        xhatplus(:,k) = xhatminus(:,k) + 0*K*(y-h); % state update
         Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
         
         PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector

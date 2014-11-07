@@ -15,19 +15,16 @@ sigma_theta = 0.01*(pi/180); % 0.01 deg (converted to rad)
 T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
 
-% theta = (7.292e-5);%*(t(k+1)-t(k));
-% T_ei = [cos(theta) -sin(theta) 0;
-%     sin(theta) cos(theta) 0;
-%     0 0 1];
+theta = (7.292e-5);%*(t(k+1)-t(k));
+T_ei = [cos(theta) -sin(theta) 0;
+    sin(theta) cos(theta) 0;
+    0 0 1];
 % rsc = T_ei*rsc1;
 
-%Create perturbed initial state
-rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
-rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
-
-%Build state vector and covaraince [m, mm/s]
-x = [rsc; 1000*rscdot]; % create initial state matrix
-P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
+rsc = xtrue(1:3,1) + sigma_pos*randn(3,1); % use initial position with added noise
+rscdot = xtrue(4:6,1) + sigma_vel*randn(3,1); % use initial velocity with added noise
+x = [rsc; rscdot]; % create initial state matrix
+P = [sigma_pos^2*eye(3), zeros(3); zeros(3), sigma_vel^2*eye(3)]; % create initial P matrix
 z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
 
 n = 60;
@@ -60,20 +57,20 @@ for mc = 1 % for monte carlo analysis
         zminus = z1(end,:);
         
         % Check error between true and estimate
-        %         xest(:,k) = [zminus(1) zminus(2) zminus(3) zminus(4) zminus(5) zminus(6)]';
-        %         err_pos(:,k) = xtrue_short(1:6,k)-xest(:,k);
+%         xest(:,k) = [zminus(1) zminus(2) zminus(3) zminus(4) zminus(5) zminus(6)]';
+%         err_pos(:,k) = xtrue_short(1:6,k)-xest(:,k);
         
         % Obtain Estimated State Values
         xhatminus(:,k) = [zminus(1:6)]';
         Pminus = reshape(zminus(:,7:42),6,6); % reshape into 6x6 matrix
-        Pminus = 0.5*(Pminus + Pminus');
+        
         %%% Update Measurement %%%
         
-        [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
+        [ox, oy, oz] = geo2ECI(lat_obs,long_obs,height_obs); % vector of landmark
         %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
         o = [ox; oy; oz];
         
-        % Compute measurement
+        %Compute measurement
         s_true = o-xtrue(1:3,k_old+n);
         eI_true = s_true/norm(s_true);
         y_true = T_IC*eI_true;
@@ -89,15 +86,15 @@ for mc = 1 % for monte carlo analysis
         %h = dT*T_IC*(o-x(1:3))/(sqrt((o-x(1:3))'*(o-x(1:3)))); % map LOS vector to spacecraft-object position vector
         %y = h+dv; % find estimate of position measurement
         
-        %         % Rotate from body to inertial frame
-        %         ex = -xhatminus(1:3,k)/norm(xhatminus(1:3,k));
-        %         ez = cross(ex,xhatminus(4:6,k)/norm(xhatminus(4:6,k)));
-        %         ey = cross(ez,ex);
-        %         ez = ez/norm(ez);
-        %         ey = ey/norm(ey);
-        %         T_BI = [ex'; ey'; ez'];
+        % Rotate from body to inertial frame
+        ex = -xhatminus(1:3,k)/norm(xhatminus(1:3,k));
+        ez = cross(ex,xhatminus(4:6,k)/norm(xhatminus(4:6,k)));
+        ey = cross(ez,ex);
+        ez = ez/norm(ez);
+        ey = ey/norm(ey);
+        T_BI = [ex'; ey'; ez'];
         
-        H = T_IC*(1/s_norm)*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
+        H = T_BI*T_IC*(1/s_norm)*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
         
         R = sigma_theta^2*(eye(3)-eI*eI'); % measurement covariance matrix
         
@@ -107,9 +104,7 @@ for mc = 1 % for monte carlo analysis
         Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
         
         PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector
-        errX(:,k) = [xhatplus(1:3,k)-xtrue_short(1:3,k); (xhatplus(4:6,k)/1000-xtrue_short(4:6,k))]; % Plot error
-        innovkeep(:,k) = y-h;
-        ykeep(:,k) = y;
+        errX(:,k) = [xhatplus(1:3,k)-xtrue_short(1:3,k); (xhatplus(4:6,k)-xtrue_short(4:6,k))]; % Plot error
         
         x = xhatplus(:,k); % update state measurement
         P = Pplus; % update covariance measurement
@@ -134,17 +129,16 @@ for mc = 1 % for monte carlo analysis
     title('Z Position')
     
     subplot(3,2,2)
-    hold on,plot(xhatminus(4,:)/1000,'bo'),plot(xhatplus(4,:)/1000,'r*'),plot(xtrue(4,2:n:end),'kx')
+    hold on,plot(xhatminus(4,:),'bo'),plot(xhatplus(4,:),'r*'),plot(xtrue(4,2:n:end),'kx')
     title('X Velocity')
     
     subplot(3,2,4)
-    hold on,plot(xhatminus(5,:)/1000,'bo'),plot(xhatplus(5,:)/1000,'r*'),plot(xtrue(5,2:n:end),'kx')
+    hold on,plot(xhatminus(5,:),'bo'),plot(xhatplus(5,:),'r*'),plot(xtrue(5,2:n:end),'kx')
     title('Y Velocity')
     
     subplot(3,2,6)
-    hold on,plot(xhatminus(6,:)/1000,'bo'),plot(xhatplus(6,:)/1000,'r*'),plot(xtrue(6,2:n:end),'kx')
+    hold on,plot(xhatminus(6,:),'bo'),plot(xhatplus(6,:),'r*'),plot(xtrue(6,2:n:end),'kx')
     title('Z Velocity')
-    legend('xhatminus','xhatplus','xtrue','Location','southoutside','Orientation','horizontal')
     
     %
     figure(2)
@@ -179,8 +173,8 @@ for mc = 1 % for monte carlo analysis
     subplot(3,1,1)
     hold on
     plot(errX(4,:))
-    plot(sqrt(PlotP(:,22))/1000,'k')
-    plot(-sqrt(PlotP(:,22))/1000,'k')
+    plot(sqrt(PlotP(:,22)),'k')
+    plot(-sqrt(PlotP(:,22)),'k')
     title('Error in X Velocity (m/s)')
     xlabel('Time (min)')
     ylabel('Magnitude (m/s)')
@@ -188,8 +182,8 @@ for mc = 1 % for monte carlo analysis
     subplot(3,1,2)
     hold on
     plot(errX(5,:))
-    plot(sqrt(PlotP(:,29))/1000,'k')
-    plot(-sqrt(PlotP(:,29))/1000,'k')
+    plot(sqrt(PlotP(:,29)),'k')
+    plot(-sqrt(PlotP(:,29)),'k')
     title('Error in Y Velocity (m/s)')
     xlabel('Time (min)')
     ylabel('Magnitude (m/s)')
@@ -197,8 +191,8 @@ for mc = 1 % for monte carlo analysis
     subplot(3,1,3)
     hold on
     plot(errX(6,:))
-    plot(sqrt(PlotP(:,36))/1000,'k')
-    plot(-sqrt(PlotP(:,36))/1000,'k')
+    plot(sqrt(PlotP(:,36)),'k')
+    plot(-sqrt(PlotP(:,36)),'k')
     title('Error in Z Velocity (m/s)')
     xlabel('Time (min)')
     ylabel('Magnitude (m/s)')
