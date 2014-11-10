@@ -21,11 +21,11 @@ options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
 %     0 0 1];
 % rsc = T_ei*rsc1;
 
-%Create perturbed initial state
+% Create perturbed initial state
 rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
 rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
 
-%Build state vector and covaraince [m, mm/s]
+% Build state vector and covaraince [m, mm/s]
 x = [rsc; 1000*rscdot]; % create initial state matrix
 P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
 z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
@@ -50,11 +50,7 @@ for mc = 1 % for monte carlo analysis
         else
             k = ((k_old-1)/n)+2;
         end
-        
-        % Landmark Observation
-        [lat_obs,long_obs,height_obs] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
-        %     llh = [lat' long' height'];
-        
+              
         % Integrate State and Covariance from tk-1 to tk
         [t1, z1] = ode45(@integrate,t(k_old):1:t(k_old+n),z,options); % integrate z to find xdot and Pdot
         zminus = z1(end,:);
@@ -67,11 +63,47 @@ for mc = 1 % for monte carlo analysis
         xhatminus(:,k) = [zminus(1:6)]';
         Pminus = reshape(zminus(:,7:42),6,6); % reshape into 6x6 matrix
         Pminus = 0.5*(Pminus + Pminus');
+        
         %%% Update Measurement %%%
+        % Find FOV footprint limits in terms of lat/long coordinates
+        % Specify Desired FOV and calculate footprint size (GIFOV)
+        FOV = 30*(pi/180); % rad
+        GIFOV = 2*(alt-Rearth)*tan(FOV/2); % km
+        
+        % Landmark Observation
+        [lat_obs,long_obs,height_obs] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
+        %     llh = [lat' long' height'];
+%         
+%         delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
+%         delta_long = GIFOV/(111.32e3*cos(lat_obs*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
+%         top = [lat_obs+delta_lat, long_obs+delta_long]; % convert to m [1deg = 111.32*cos(lat)]
+%         left = [lat_obs+delta_lat, long_obs-delta_long];
+%         bottom = [lat_obs-delta_lat, long_obs-delta_long];
+%         right = [lat_obs-delta_lat, long_obs+delta_long];
+%         box = [top; left; bottom; right];
+%         %         figure, plot(box(1,1),box(1,2),'*',box(2,1),box(2,2),'*',box(3,1),box(3,2),'*',box(4,1),box(4,2),'*')
+%         %         dist = acos(sin(lat(k)*(pi/180))*sin(lat(k+1)*(pi/180))+cos(lat(k)*(pi/180))*cos(lat(k+1)*(pi/180))*cos((long(k)-long(k+1))*(pi/180)));
+%         
+%         % Check for coastline points within footprint limits
+%         coordfind = find(lat < max(box(:,1)) & lat > min(box(:,1)) & long < max(box(:,2)) & long > min(box(:,2)));
+%         if isempty(coordfind) == 0
+%             latlong_est = [lat(coordfind(1)) long(coordfind(1))];
+%             [ox, oy, oz] = geo2ECI(latlong_est(1)+10*randn(1),latlong_est(2)+10*randn(1),height_obs); % vector of landmark
+%             o = [ox; oy; oz];
+%             %             pos_est(k,:) = latlong2ECEF(latlong_est(1),latlong_est(2),0); % convert lat/long point to ECEF point on surface
+%         else
+%             %             pos_est(k,:) = xtrue(1:3,k-1);
+%             fprintf('No Coastline at k = %f. \n',k)
+%             [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
+%             %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
+%             o = [ox; oy; oz];
+%             % continue
+%         end
         
         [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
         %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
         o = [ox; oy; oz];
+
         
         % Compute measurement
         s_true = o-xtrue(1:3,k_old+n);
@@ -103,7 +135,7 @@ for mc = 1 % for monte carlo analysis
         
         K = (Pminus*H')/((H*Pminus*H'+R+(0.5*trace(R))*(eI*eI'))); % find optimal Kalman gain
         
-        xhatplus(:,k) = xhatminus(:,k) + K*(y-h); % state update
+        xhatplus(:,k) = xhatminus(:,k) + 0*K*(y-h); % state update
         Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
         
         PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector
