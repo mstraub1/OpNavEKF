@@ -17,11 +17,14 @@ t = [0:15*60*60]'; % 12 hours of data - time vector for ode45 (sec)
 
 % Propagate elements for length of time specified in t vector using ode45
 [R,V] = elementstoRV(alt,e,i,w,Omega,nu); 
-x = [R; V]; % [m, m/s]
+x = [R; V*1000]; % [m, mm/s]
 options = odeset('abstol',1e-8,'reltol',1e-8);
-[t1,Pos] = ode45(@earthgravity,t(1):1:t(end),x,options);
+[t1,Pos] = ode45(@earthgravity,t,x,options);
 Position = Pos(:,1:3); % ECI
 Velocity = Pos(:,4:6); % ECI
+
+figure 
+plot3(Position(:,1),Position(:,2),Position(:,3),'-')
 
 for k = 1:length(Position)
     [lat(k),long(k),height(k)] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));

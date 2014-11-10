@@ -1,8 +1,8 @@
 function zdot = integrate(t,z)
 
 % Redefine parameters from z matrix
-rsc = z(1:3);
-rscdot = z(4:6);
+rsc = z(1:3); %m
+rscdot = z(4:6); %mm/sec
 P = reshape(z(7:42),6,6);
 
 sigmaQ = 1e-7; % standard deviation of state measurement

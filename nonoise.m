@@ -26,7 +26,7 @@ rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added n
 rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
 
 % Build state vector and covaraince [m, mm/s]
-x = [rsc; 1000*rscdot]; % create initial state matrix
+x = [rsc; rscdot]; % create initial state matrix
 P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
 z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
 
@@ -36,6 +36,11 @@ xtrue_short = xtrue(:,1:n:end);
 xhatminus(:,1) = x;
 xhatplus(:,1) = x;
 PlotP(1,:) = reshape(P,36,1);
+
+%inputting initial camera quaternion
+thetacam=90*pi/180;
+e_thetacam=[0,1,0]./norm([0,1,0]);
+qcam=[sin(thetacam/2)*e_thetacam,cos(thetacam/2)];
 
 for mc = 1 % for monte carlo analysis
     mc
@@ -52,7 +57,7 @@ for mc = 1 % for monte carlo analysis
         end
               
         % Integrate State and Covariance from tk-1 to tk
-        [t1, z1] = ode45(@integrate,t(k_old):1:t(k_old+n),z,options); % integrate z to find xdot and Pdot
+        [t1, z1] = ode45(@integrate,0:60,z,options); % integrate z to find xdot and Pdot
         zminus = z1(end,:);
         
         % Check error between true and estimate
@@ -73,37 +78,42 @@ for mc = 1 % for monte carlo analysis
         % Landmark Observation
         [lat_obs,long_obs,height_obs] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
         %     llh = [lat' long' height'];
-%         
-%         delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
-%         delta_long = GIFOV/(111.32e3*cos(lat_obs*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
-%         top = [lat_obs+delta_lat, long_obs+delta_long]; % convert to m [1deg = 111.32*cos(lat)]
-%         left = [lat_obs+delta_lat, long_obs-delta_long];
-%         bottom = [lat_obs-delta_lat, long_obs-delta_long];
-%         right = [lat_obs-delta_lat, long_obs+delta_long];
-%         box = [top; left; bottom; right];
-%         %         figure, plot(box(1,1),box(1,2),'*',box(2,1),box(2,2),'*',box(3,1),box(3,2),'*',box(4,1),box(4,2),'*')
-%         %         dist = acos(sin(lat(k)*(pi/180))*sin(lat(k+1)*(pi/180))+cos(lat(k)*(pi/180))*cos(lat(k+1)*(pi/180))*cos((long(k)-long(k+1))*(pi/180)));
-%         
-%         % Check for coastline points within footprint limits
-%         coordfind = find(lat < max(box(:,1)) & lat > min(box(:,1)) & long < max(box(:,2)) & long > min(box(:,2)));
-%         if isempty(coordfind) == 0
-%             latlong_est = [lat(coordfind(1)) long(coordfind(1))];
-%             [ox, oy, oz] = geo2ECI(latlong_est(1)+10*randn(1),latlong_est(2)+10*randn(1),height_obs); % vector of landmark
-%             o = [ox; oy; oz];
-%             %             pos_est(k,:) = latlong2ECEF(latlong_est(1),latlong_est(2),0); % convert lat/long point to ECEF point on surface
-%         else
-%             %             pos_est(k,:) = xtrue(1:3,k-1);
-%             fprintf('No Coastline at k = %f. \n',k)
-%             [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
-%             %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
-%             o = [ox; oy; oz];
-%             % continue
-%         end
-        
-        [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
-        %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
-        o = [ox; oy; oz];
 
+        delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
+        delta_long = GIFOV/(111.32e3*cos(lat_obs*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
+        top = [lat_obs+delta_lat, long_obs+delta_long]; % convert to m [1deg = 111.32*cos(lat)]
+        left = [lat_obs+delta_lat, long_obs-delta_long];
+        bottom = [lat_obs-delta_lat, long_obs-delta_long];
+        right = [lat_obs-delta_lat, long_obs+delta_long];
+        box = [top; left; bottom; right];
+        %         figure, plot(box(1,1),box(1,2),'*',box(2,1),box(2,2),'*',box(3,1),box(3,2),'*',box(4,1),box(4,2),'*')
+        %         dist = acos(sin(lat(k)*(pi/180))*sin(lat(k+1)*(pi/180))+cos(lat(k)*(pi/180))*cos(lat(k+1)*(pi/180))*cos((long(k)-long(k+1))*(pi/180)));
+        
+        % Check for coastline points within footprint limits
+        coordfind = find(lat < max(box(:,1)) & lat > min(box(:,1)) & long < max(box(:,2)) & long > min(box(:,2)));
+        if isempty(coordfind) == 0
+            latlong_est = [lat(coordfind(1)) long(coordfind(1))];
+            [ox, oy, oz] = geo2ECI(latlong_est(1)+10*randn(1),latlong_est(2)+10*randn(1),height_obs); % vector of landmark
+            o = [ox; oy; oz];
+        else
+%             fprintf('No Coastline at k = %f. \n',k)
+            [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
+            o = [ox; oy; oz];
+            % continue
+        end
+        
+%         [ox, oy, oz] = geo2ECI(lat_obs+10*randn(1),long_obs+10*randn(1),height_obs); % vector of landmark
+%         %     o = [Position(k_old,1),Position(k_old,2),Position(k_old,3)]';
+%         o = [ox; oy; oz];
+
+        % Rotate from inertial frame to spacecraft frame
+        ex = -xhatminus(1:3,k)/norm(xhatminus(1:3,k));
+        ez = cross(ex,xhatminus(4:6,k)/norm(xhatminus(4:6,k)));
+        ey = cross(ez,ex);
+        ez = ez/norm(ez);
+        ey = ey/norm(ey);
+        T_BI = [ex'; ey'; ez'];
+        T_IC = q_to_T(qcam)'*T_BI';
         
         % Compute measurement
         s_true = o-xtrue(1:3,k_old+n);
@@ -121,21 +131,14 @@ for mc = 1 % for monte carlo analysis
         %h = dT*T_IC*(o-x(1:3))/(sqrt((o-x(1:3))'*(o-x(1:3)))); % map LOS vector to spacecraft-object position vector
         %y = h+dv; % find estimate of position measurement
         
-        %         % Rotate from body to inertial frame
-        %         ex = -xhatminus(1:3,k)/norm(xhatminus(1:3,k));
-        %         ez = cross(ex,xhatminus(4:6,k)/norm(xhatminus(4:6,k)));
-        %         ey = cross(ez,ex);
-        %         ez = ez/norm(ez);
-        %         ey = ey/norm(ey);
-        %         T_BI = [ex'; ey'; ez'];
-        
-        H = T_IC*(1/s_norm)*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
+        H = T_BI*T_IC*(1/s_norm)*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
         
         R = sigma_theta^2*(eye(3)-eI*eI'); % measurement covariance matrix
         
         K = (Pminus*H')/((H*Pminus*H'+R+(0.5*trace(R))*(eI*eI'))); % find optimal Kalman gain
         
-        xhatplus(:,k) = xhatminus(:,k) + 0*K*(y-h); % state update
+
+        xhatplus(:,k) = xhatminus(:,k) + K*(y-h); % state update
         Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
         
         PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector
@@ -146,12 +149,9 @@ for mc = 1 % for monte carlo analysis
         x = xhatplus(:,k); % update state measurement
         P = Pplus; % update covariance measurement
         z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
-        
-        %pause
-        
+               
     end
     
-    %
     figure(1)
     subplot(3,2,1)
     hold on,plot(xhatminus(1,:),'bo'),plot(xhatplus(1,:),'r*'),plot(xtrue(1,2:n:end),'kx')
@@ -166,19 +166,18 @@ for mc = 1 % for monte carlo analysis
     title('Z Position')
     
     subplot(3,2,2)
-    hold on,plot(xhatminus(4,:)/1000,'bo'),plot(xhatplus(4,:)/1000,'r*'),plot(xtrue(4,2:n:end),'kx')
+    hold on,plot(xhatminus(4,:),'bo'),plot(xhatplus(4,:),'r*'),plot(xtrue(4,2:n:end),'kx')
     title('X Velocity')
     
     subplot(3,2,4)
-    hold on,plot(xhatminus(5,:)/1000,'bo'),plot(xhatplus(5,:)/1000,'r*'),plot(xtrue(5,2:n:end),'kx')
+    hold on,plot(xhatminus(5,:),'bo'),plot(xhatplus(5,:),'r*'),plot(xtrue(5,2:n:end),'kx')
     title('Y Velocity')
     
     subplot(3,2,6)
-    hold on,plot(xhatminus(6,:)/1000,'bo'),plot(xhatplus(6,:)/1000,'r*'),plot(xtrue(6,2:n:end),'kx')
+    hold on,plot(xhatminus(6,:),'bo'),plot(xhatplus(6,:),'r*'),plot(xtrue(6,2:n:end),'kx')
     title('Z Velocity')
     legend('xhatminus','xhatplus','xtrue','Location','southoutside','Orientation','horizontal')
     
-    %
     figure(2)
     subplot(3,1,1)
     hold on
