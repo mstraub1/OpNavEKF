@@ -5,14 +5,15 @@ rsc = z(1:3); %m
 rscdot = z(4:6); %mm/sec
 P = reshape(z(7:42),6,6);
 
-sigmaQ = 1e-7; % standard deviation of state measurement
-Q = [zeros(3,6); zeros(3), sigmaQ^2*eye(3)];
+sigmaQ = 1000*1e-7; % standard deviation of state measurement
+Q = [zeros(3,6); 
+     zeros(3), sigmaQ^2*eye(3)];
 
 rsc_norm = norm(rsc);
 
 mu = (1000^3)*398600; % m3/s2
 rscdoubledot = 1000*(-mu/(rsc_norm^3))*rsc; % m/s2
-Grr = (-mu/(rsc_norm^3))*eye(3)+(3*mu/(rsc_norm^5))*(rsc')*rsc; % m/s2
+Grr = (-mu/(rsc_norm^3))*eye(3)+(3*mu/(rsc_norm^5))*(rsc*rsc'); % m/s2
 % Grr(1,1) = mu*((3*(rsc(1)^2)/(rsc_norm^5))-(1/(rsc_norm)^3));
 % Grr(1,2) = mu*(3*rsc(1)*rsc(2)/(rsc_norm^5));
 % Grr(1,3) = mu*(3*rsc(1)*rsc(3)/(rsc_norm^5));
