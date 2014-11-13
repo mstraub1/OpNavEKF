@@ -34,8 +34,8 @@ PlotP(1,:) = reshape(P,36,1);
 
 % Inputing initial camera quaternion
 thetacam = 90*pi/180;
-e_thetacam = [0,1,0]./norm([0,1,0]);
-qcam = [sin(thetacam/2)*e_thetacam,cos(thetacam/2)];
+e_thetacam = [0,1,0]/norm([0,1,0]);
+qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
 
 Pos = z(1:6)';
 %%
