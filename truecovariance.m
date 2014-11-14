@@ -79,7 +79,7 @@ T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camer
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
 
 %%
-for mc = 1:10 % for monte carlo analysis
+for mc = 1:2 % for monte carlo analysis
     mc
     % Create perturbed initial state
     rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
@@ -202,7 +202,6 @@ for mc = 1:10 % for monte carlo analysis
             end
         else
             fprintf('No Coastline at k = %f. \n',k)
-            
             Pplus = Pminus;
             xhatplus = xhatminus;
         end
@@ -250,23 +249,23 @@ for mc = 1:10 % for monte carlo analysis
     sigPos_x = sqrt(z_prop(:,7));
     %         sigPos_x_true = sqrt(z_plot(:,7));
     
-    if mc==1
-        cc = 'r'
-    else
-        cc = 'k'
-    end
+%     if mc==1
+%         cc = 'r'
+%     else
+%         cc = 'k'
+%     end
+
     figure(1)
     subplot(3,1,1)
     hold on
     %     plot(err_pos_rot(1,2:end))
-    
-    plot(T,sigPos_x,cc)
-    plot(T,-sigPos_x,cc)
+    plot(T,sigPos_x)
+    plot(T,-sigPos_x)
     %         plot(T,sigPos_x_true)
     %         plot(T,-sigPos_x_true)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in X Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
@@ -279,7 +278,7 @@ for mc = 1:10 % for monte carlo analysis
     plot(T,-sigPos_y)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
@@ -292,7 +291,7 @@ for mc = 1:10 % for monte carlo analysis
     plot(T,-sigPos_z)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
@@ -306,12 +305,12 @@ for mc = 1:10 % for monte carlo analysis
     plot(T,-sigVel_x)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in X Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
-    sigVel_y = sqrt(z_prop(:,36));
+    sigVel_y = sqrt(z_prop(:,35));
     subplot(3,1,2)
     hold on
     %     plot(err_pos_rot(1,2:end))
@@ -319,7 +318,7 @@ for mc = 1:10 % for monte carlo analysis
     plot(T,-sigVel_y)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
@@ -332,13 +331,13 @@ for mc = 1:10 % for monte carlo analysis
     plot(T,-sigVel_z)
     %     plot(P_pos_rot_diag(1,2:end),'k')
     %     plot(-P_pos_rot_diag(1,2:end),'k')
-    %     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
     figure(3)
-    plot(sqrt(sum(P_pos_rot_diag.^2)),cc)
+    plot(sqrt(sum(P_pos_rot_diag.^2)))
     hold on
     
     
