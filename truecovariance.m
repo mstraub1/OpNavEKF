@@ -11,7 +11,7 @@ xtrue = [rsc'; Vel']; %
 
 % Define constants
 sigma_pos = 500; % 100 m
-sigma_vel = .01; % 1 mm/s
+sigma_vel = .001; % 1 mm/s
 sigma_theta = 0.005*(pi/180); % 0.01 deg (converted to rad)
 T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
@@ -32,10 +32,10 @@ xhatminus(:,1) = x;
 xhatplus(:,1) = x;
 PlotP(1,:) = reshape(P,36,1);
 
-% Inputing initial camera quaternion
-thetacam = 90*pi/180;
-e_thetacam = [0,1,0]/norm([0,1,0]);
-qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
+% % Inputing initial camera quaternion
+% thetacam = 90*pi/180;
+% e_thetacam = [0,1,0]/norm([0,1,0]);
+% qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
 
 Pos = z(1:6)';
 %%
@@ -96,7 +96,7 @@ for mc = 1 % for monte carlo analysis
                 o = [ox; oy; oz];
                 
                 % Compute measurement
-                s_true = o-xtrue(1:3,k_old+n);
+                s_true = o-xtrue_short(1:3,k);
                 eI = s_true/norm(s_true);
                 y = T_IC*eI;
                 %

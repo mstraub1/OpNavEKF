@@ -9,7 +9,7 @@ height = 1000*1000; % height above Earth (m) (assume circular orbit at 500 km)
 Rearth = 1000*6378; % radius of Earth (m)
 alt = Rearth+height; % altitude of orbit (m)
 e = 0; % eccentricity (rad) (circular orbit = 0)
-i = 90*(pi/180); % inclination in rad (polar orbit = 90 deg)
+i = 45*(pi/180); % inclination in rad (polar orbit = 90 deg)
 w = 0; % right ascension of ascending node (rad)
 Omega = 0; % argument of periapsis (rad)
 nu = 0; % true anomaly (rad)
@@ -23,11 +23,12 @@ options = odeset('abstol',1e-8,'reltol',1e-8);
 Position = Pos(:,1:3); % ECI
 Velocity = Pos(:,4:6); % ECI
 
-figure 
-plot3(Position(:,1),Position(:,2),Position(:,3),'-')
+% figure 
+% plot3(Position(:,1),Position(:,2),Position(:,3),'-')
 
 for k = 1:length(Position)
-    [lat(k),long(k),height(k)] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
+%     [lat(k),long(k),height(k)] =  ECEF2latlong(Position(k,1),Position(k,2),Position(k,3));
+    lla(k,:) = eci2lla([Position(k,1),Position(k,2),Position(k,3)],[2014 11 14 12 05 36]);
 end
 
 llh = [lat' long' height'];

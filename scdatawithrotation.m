@@ -9,11 +9,11 @@ height = 1000*1000; % height above Earth (m) (assume circular orbit at 500 km)
 Rearth = 1000*6378; % radius of Earth (m)
 alt = Rearth+height; % altitude of orbit (m)
 e = 0; % eccentricity (rad) (circular orbit = 0)
-i = 51.6*(pi/180); % inclination in rad (polar orbit = 90 deg)
+i = 90*(pi/180); % inclination in rad (polar orbit = 90 deg)
 w = 0; % right ascension of ascending node (rad)
 Omega = 0; % argument of periapsis (rad)
 nu = 0; % true anomaly (rad)
-t = [0:12*60*60]'; % 12 hours of data - time vector for ode45 (sec)
+t = [0:6*60*60]'; % 12 hours of data - time vector for ode45 (sec)
 
 % Propagate elements for length of time specified in t vector using ode45
 [R,V] = elementstoRV(alt,e,i,w,Omega,nu); 
@@ -26,7 +26,7 @@ V = Pos(:,4:6);
 angvel = 7.292e-5; % angular velocity of Earth (rad/s)
 
 % include Earth's rotation in calculations
-n = 5*60;
+n = 60;
 for m = 1:length(t1)
 
     if m+1 > length(t1)
@@ -41,7 +41,7 @@ for m = 1:length(t1)
 
 rot = [cos(theta(m)) -sin(theta(m)) 0;
         sin(theta(m)) cos(theta(m)) 0;
-        0 0 1];
+        0 0 1]
     
 R_new(m,:) = rot*R(m,:)';
 V_new(m,:) = rot*V(m,:)';
