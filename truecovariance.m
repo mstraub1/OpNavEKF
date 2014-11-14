@@ -15,12 +15,12 @@ nu = 0; % true anomaly (rad)
 t = [0:12*60*60]'; % 12 hours of data - time vector for ode45 (sec)
 
 % Propagate elements for length of time specified in t vector using ode45
-[R,V] = elementstoRV(alt,e,i,w,Omega,nu); 
+[R,V] = elementstoRV(alt,e,i,w,Omega,nu);
 x = [R; V]; % [m, m/s]
 options = odeset('abstol',1e-8,'reltol',1e-8);
-[t1,Pos] = ode45(@earthgravity_m,t,x,options);
-Pos_ECI = Pos(:,1:3); % ECI [m]
-Vel_ECI = 1000*Pos(:,4:6); % ECI [mm/s]
+[t1,z_true] = ode45(@earthgravity_m,t,x,options);
+Pos_ECI = z_true(:,1:3); % ECI [m]
+Vel_ECI = 1000*z_true(:,4:6); % ECI [mm/s]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 angvel = 7.292e-5; % angular velocity of Earth (rad/s)
@@ -28,7 +28,7 @@ angvel = 7.292e-5; % angular velocity of Earth (rad/s)
 % ECEF Coordinates
 n = 60;
 for m = 1:length(t1)
-
+    
     if m+1 > length(t1)
         break
     end
@@ -38,17 +38,17 @@ for m = 1:length(t1)
     else
         theta(m) = theta(m-1) + angvel*(t(m+1)-t(m));
     end
-
-rot = [cos(theta(m)) -sin(theta(m)) 0;
+    
+    rot = [cos(theta(m)) -sin(theta(m)) 0;
         sin(theta(m)) cos(theta(m)) 0;
         0 0 1];
     
-Pos_ECEF(m,:) = rot*Pos_ECI(m,:)';
-Vel_ECEF(m,:) = rot*Vel_ECI(m,:)';
-
-lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
-long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
-
+    Pos_ECEF(m,:) = rot*Pos_ECI(m,:)';
+    Vel_ECEF(m,:) = rot*Vel_ECI(m,:)';
+    
+    lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
+    long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
+    
 end
 
 load coord.mat;
@@ -60,15 +60,11 @@ load coord.mat;
 % zlabel('z')
 % grid on
 % axis equal
-% % 
+% %
 % figure
 % plot(long,lat,'k')
 % hold on
 % plot(long_calc(1:n:end),lat_calc(1:n:end),'*')
-
-
-% ECEF Coordinates for lat/long conversion
-% load PosVel_ECEF.mat;
 
 % Initialize variables
 rsc = Pos_ECI(:,1:3); % ECI [m]
@@ -77,36 +73,37 @@ xtrue = [rsc'; Vel']; % ECI [m, mm/s]
 
 % Define constants
 sigma_pos = 500; % 100 m
-sigma_vel = .001; % 1 mm/s
-sigma_theta = 0.005*(pi/180); % 0.01 deg (converted to rad)
+sigma_vel = .05; % 1 mm/s
+sigma_theta = 0.01*(pi/180); % 0.01 deg (converted to rad)
 T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
 
-% Create perturbed initial state
-rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
-rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
-
-% Build state vector and covariance [m, mm/s]
-x = [rsc; rscdot]; % create initial state matrix
-P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
-z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
-
-n = 60;
-xtrue_short = xtrue(:,1:n:end);
-
-xhatminus(:,1) = x;
-xhatplus(:,1) = x;
-PlotP(1,:) = reshape(P,36,1);
-
-% % Inputing initial camera quaternion
-% thetacam = 90*pi/180;
-% e_thetacam = [0,1,0]/norm([0,1,0]);
-% qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
-
-Pos = z(1:6)';
 %%
-for mc = 1 % for monte carlo analysis
+for mc = 1:10 % for monte carlo analysis
     mc
+    % Create perturbed initial state
+    rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
+    rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
+    
+    % Build state vector and covariance [m, mm/s]
+    x = [rsc; rscdot]; % create initial state matrix
+    P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
+    z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
+    
+    n = 60;
+    xtrue_short = xtrue(:,1:n:end);
+    
+    xhatminus(:,1) = x;
+    xhatplus(:,1) = x;
+    PlotP(1,:) = reshape(P,36,1);
+    
+    % % Inputing initial camera quaternion
+    % thetacam = 90*pi/180;
+    % e_thetacam = [0,1,0]/norm([0,1,0]);
+    % qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
+    
+    z_true = z(1:6)';
+    
     for k_old = 1:n:length(t)
         
         if k_old+1 > length(t)
@@ -119,9 +116,28 @@ for mc = 1 % for monte carlo analysis
             k = ((k_old-1)/n)+2;
         end
         
+        %         [t2,Posout] = ode45(@earthgravity,0:60,z_true(end,:)',options);
+        %         if k_old == 1
+        %             T2 = t2;
+        %             z_true = Posout;
+        %         else
+        %             T2 = [T2;t2+T2(end)];
+        %             z_true = [z_true; Posout];
+        %         end
+        
         [t1, z1] = ode45(@integrate,0:60,z,options); % integrate z to find xdot and Pdot
         zminus = z1(end,:);
         z_plot(k,:) = zminus;
+        
+        if k_old == 1
+            T = t1;
+            z_prop = z1;
+            %             ERR_Pos = sqrt(diag((z_true(:,1:3)-z_prop(:,1:3))*(z_true(:,1:3)-z_prop(:,1:3))'));
+        else
+            T = [T; t1+T(end)];
+            z_prop = [z_prop; z1];
+            %             ERR_Pos = [ERR_Pos; sqrt(diag((Posout(:,1:3)-z1(:,1:3))*(Posout(:,1:3)-z1(:,1:3))'))];
+        end
         
         % Obtain Estimated State Values
         xhatminus(:,k) = [zminus(1:6)]';
@@ -150,7 +166,7 @@ for mc = 1 % for monte carlo analysis
         % Check for coastline points within footprint limits
         coordfind = find(lat < max(box(:,1)) & lat > min(box(:,1)) & long < max(box(:,2)) & long > min(box(:,2)));
         if isempty(coordfind) == 0
-           if length(coordfind) > 1
+            if length(coordfind) > 1
                 latlong_est = [lat(coordfind(1:2)) long(coordfind(1:2))];
                 number = 2;
             else
@@ -231,67 +247,99 @@ for mc = 1 % for monte carlo analysis
     maxstd_pos2 = max(max(P_pos_rot_diag));
     maxstd_vel2 = max(max(P_vel_rot_diag));
     %%
+    sigPos_x = sqrt(z_prop(:,7));
+    %         sigPos_x_true = sqrt(z_plot(:,7));
+    
+    if mc==1
+        cc = 'r'
+    else
+        cc = 'k'
+    end
     figure(1)
     subplot(3,1,1)
     hold on
     %     plot(err_pos_rot(1,2:end))
-    plot(P_pos_rot_diag(1,2:end),'k')
-    plot(-P_pos_rot_diag(1,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
+    
+    plot(T,sigPos_x,cc)
+    plot(T,-sigPos_x,cc)
+    %         plot(T,sigPos_x_true)
+    %         plot(T,-sigPos_x_true)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in X Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
+    sigPos_y = sqrt(z_prop(:,14));
     subplot(3,1,2)
     hold on
-    %     plot(err_pos_rot(2,2:end))
-    plot(P_pos_rot_diag(2,2:end),'k')
-    plot(-P_pos_rot_diag(2,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
+    %     plot(err_pos_rot(1,2:end))
+    plot(T,sigPos_y)
+    plot(T,-sigPos_y)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
+    sigPos_z = sqrt(z_prop(:,21));
     subplot(3,1,3)
     hold on
-    %     plot(err_pos_rot(3,2:end))
-    plot(P_pos_rot_diag(3,2:end),'k')
-    plot(-P_pos_rot_diag(3,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
-    title('Error in Z Position (m)')
+    %     plot(err_pos_rot(1,2:end))
+    plot(T,sigPos_z)
+    plot(T,-sigPos_z)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
+    sigVel_x = sqrt(z_prop(:,28));
     figure(2)
     subplot(3,1,1)
     hold on
-    %     plot(err_vel_rot(1,:))
-    plot(P_vel_rot_diag(1,2:end),'k')
-    plot(-P_vel_rot_diag(1,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
-    title('Error in X Velocity (mm/s)')
+    %     plot(err_pos_rot(1,2:end))
+    plot(T,sigVel_x)
+    plot(T,-sigVel_x)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    title('Error in X Position (m)')
     xlabel('Time (min)')
-    ylabel('Magnitude (mm/s)')
+    ylabel('Magnitude (m)')
     
+    sigVel_y = sqrt(z_prop(:,36));
     subplot(3,1,2)
     hold on
-    %     plot(err_vel_rot(2,:))
-    plot(P_vel_rot_diag(2,2:end),'k')
-    plot(-P_vel_rot_diag(2,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
-    title('Error in Y Velocity (mm/s)')
+    %     plot(err_pos_rot(1,2:end))
+    plot(T,sigVel_y)
+    plot(T,-sigVel_y)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %         axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    title('Error in Y Position (m)')
     xlabel('Time (min)')
-    ylabel('Magnitude (mm/s)')
+    ylabel('Magnitude (m)')
     
+    sigVel_z = sqrt(z_prop(:,42));
     subplot(3,1,3)
     hold on
-    %     plot(err_vel_rot(3,:))
-    plot(P_vel_rot_diag(3,2:end),'k')
-    plot(-P_vel_rot_diag(3,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
-    title('Error in Z Velocity (mm/s)')
+    %     plot(err_pos_rot(1,2:end))
+    plot(T,sigVel_z)
+    plot(T,-sigVel_z)
+    %     plot(P_pos_rot_diag(1,2:end),'k')
+    %     plot(-P_pos_rot_diag(1,2:end),'k')
+    %     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    title('Error in Y Position (m)')
     xlabel('Time (min)')
+    ylabel('Magnitude (m)')
     
+    figure(3)
+    plot(sqrt(sum(P_pos_rot_diag.^2)),cc)
+    hold on
     
     
 end

@@ -350,13 +350,13 @@ for mc = 1 % for monte carlo analysis
 %     xlabel('Time (min)')
 %     ylabel('Magnitude (m/s)')
     
-%     sig3 = 3*sqrt(ZZ(:,7)+ZZ(:,14)+ZZ(:,21));
-%     figure
-%     plot(T,sig3,'r-')
-%     hold on
-%     plot(T2,ERR_Pos,'k-')
-%     axis([0 T(end),0,max(sig3)])
-%     
+    sig3 = 3*sqrt(ZZ(:,7)+ZZ(:,14)+ZZ(:,21));
+    figure
+    plot(T,sig3,'r-')
+    hold on
+    plot(T2,ERR_Pos,'k-')
+    axis([0 T(end),0,max(sig3)])
+    
 %     figure
 %     plot(SS_keep(1,:),'k'), hold on
 %     plot(SS_keep(2,:))
