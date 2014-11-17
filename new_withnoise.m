@@ -25,11 +25,11 @@ Vel_ECI = 1000*z_true(:,4:6); % ECI [mm/s]
 
 angvel = 7.292e-5; % angular velocity of Earth (rad/s)
 
-% ECEF Coordinates
+% ECEF Coordinates for observing lat/long points
 n = 60;
 for m = 1:length(t1)
     
-    if m+1 > length(t1)
+    if m+2 > length(t1)
         break
     end
     
@@ -43,14 +43,23 @@ for m = 1:length(t1)
         sin(theta(m)) cos(theta(m)) 0;
         0 0 1];
     
-    Pos_ECEF(m,:) = rot*Pos_ECI(m,:)';
-    Vel_ECEF(m,:) = rot*Vel_ECI(m,:)';
+    Pos_ECEF(m,:) = rot*Pos_ECI(m,:)'; % ECEF
+    Vel_ECEF(m,:) = rot*Vel_ECI(m,:)'; % ECEF
     
-    lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
-    long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
+    % Check Coordinate Frames
+    [lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(m,1),Pos_ECEF(m,2),Pos_ECEF(m,3));
+    o_ECEF(m,:) = latlong2ECEF(lat_obs,long_obs,height_obs); % vector of landmark
+    o_ECI(m,:) = inv(rot)*o_ECEF(m,:)';
+%     diff(m,:) = [Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
     
+    diff(m,:) = [Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
 end
+        
+o_ECEF = [ox_ECEF; oy_ECEF; oz_ECEF];
 
+lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
+long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
+    
 load coord.mat;
 
 % % Plot orbit to check
@@ -131,16 +140,13 @@ for mc = 1 % for monte carlo analysis
         
         if k_old == 1
             T = t1;
-            z_prop = z1;
+            z_prop = z1; % ECI
             err = z_prop(:,1:6)-true2(:,1:6);
-%             err_vel = z1(:,4:6)-rscdot';
         else
             T = [T; t1+T(end)];
-            z_prop = [z_prop; z1];
+            z_prop = [z_prop; z1]; % ECI
             err = z_prop(:,1:6)-true2(:,1:6);
-%             err_vel = [err_vel; z1(:,4:6)-rscdot'];
         end
-%         size(err)
                
         % Obtain Estimated State Values
         xhatminus(:,k) = [zminus(1:6)]';
@@ -154,8 +160,20 @@ for mc = 1 % for monte carlo analysis
         GIFOV = 2*(alt-Rearth)*tan(FOV/2); % km
         
         % Landmark Observation
-        [lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(k,1),Pos_ECEF(k,2),Pos_ECEF(k,3));
         
+%         % Check Coordinate Frames
+%         for check = 1:length(theta_mat)
+%             rot = [cos(theta(check)) -sin(theta(check)) 0;
+%                 sin(theta(check)) cos(theta(check)) 0;
+%                 0 0 1];
+%             [lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(check,1),Pos_ECEF(check,2),Pos_ECEF(check,3));
+%             o_ECEF = latlong2ECEF(lat_obs,long_obs,height_obs); % vector of landmark
+% %             o_ECI = rot\o_ECEF';
+%             diff(check,:) = [Pos_ECEF(check,1),Pos_ECEF(check,2),Pos_ECEF(check,3)] - o_ECEF;
+%         end
+%         
+%         o_ECEF = [ox_ECEF; oy_ECEF; oz_ECEF];
+
         delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
         delta_long = GIFOV/(111.32e3*cos(lat_obs*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
         top = [lat_obs+delta_lat, long_obs+delta_long]; % convert to m [1deg = 111.32*cos(lat)]
@@ -177,9 +195,9 @@ for mc = 1 % for monte carlo analysis
                 number = 1;
             end
             for num = 1:number
-                [ox, oy, oz] = geo2ECI(latlong_est(num,1)+10*randn(1),latlong_est(num,2)+10*randn(1),height_obs); % vector of landmark
-                o = [ox; oy; oz];
-                
+%                 [ox, oy, oz] = geo2ECI(latlong_est(num,1)+10*randn(1),latlong_est(num,2)+10*randn(1),height_obs); % vector of landmark
+                %                 o = [ox, oy, oz];
+
                 % Compute measurement
                 s_true = o-xtrue_short(1:3,k);
                 eI_true = s_true/norm(s_true);
@@ -258,9 +276,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigPos_x)
     plot(T,-sigPos_x)
     plot(T,err_pos_rot(1,:),'r')
-    %     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in X Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     sigPos_y = sqrt(z_prop(:,14));
@@ -269,9 +287,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigPos_y)
     plot(T,-sigPos_y)
     plot(T,err_pos_rot(2,:),'r')
-%     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     sigPos_z = sqrt(z_prop(:,21));
@@ -280,9 +298,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigPos_z)
     plot(T,-sigPos_z)
     plot(T,err_pos_rot(3,:),'r')
-%     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     sigVel_x = sqrt(z_prop(:,28));
@@ -292,9 +310,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigVel_x)
     plot(T,-sigVel_x)
     plot(T,err_vel_rot(1,:),'r')
-%     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in X Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     sigVel_y = sqrt(z_prop(:,35));
@@ -303,9 +321,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigVel_y)
     plot(T,-sigVel_y)
     plot(T,err_vel_rot(2,:),'r')
-%     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     sigVel_z = sqrt(z_prop(:,42));
@@ -314,9 +332,9 @@ for mc = 1 % for monte carlo analysis
     plot(T,sigVel_z)
     plot(T,-sigVel_z)
     plot(T,err_vel_rot(3,:),'r')
-%     axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
+    axis([0 length(xtrue) -maxstd_vel2 maxstd_vel2])
     title('Error in Y Position (m)')
-    xlabel('Time (min)')
+    xlabel('Time (sec)')
     ylabel('Magnitude (m)')
     
     figure(3)

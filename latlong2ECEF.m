@@ -13,17 +13,27 @@ function ECEF = latlong2ECEF(lat,long,h)
 lat = (pi/180)*(lat);
 long = (pi/180)*(long);
 
-a = 1000*6378; % equatorial radius in m
-f = 1/298.257224e3; % flattening parameter (a-b)/a where b is polar radius
-% e = 0;
-% N = a/sqrt(1-e^2*sind(lat));
+% a = 1000*6378; % equatorial radius in m
+% f = 1/298.257224e3; % flattening parameter (a-b)/a where b is polar radius
+% % e = 0;
+% % N = a/sqrt(1-e^2*sind(lat));
+% 
+% C = 1/sqrt(cos(lat)^2+(1-f)^2*sin(lat)^2);
+% S = (1-f)^2*C;
+% 
+% % x = (a*C+h)*cos(lat)*cos(long);
+% % y = (a*C+h)*cos(lat)*sin(long);
+% % z = (a*S+h)*sin(lat);
 
-C = 1/sqrt(cos(lat)^2+(1-f)^2*sin(lat)^2);
-S = (1-f)^2*C;
+a = 1000*6378;
+b = 1000*6357;
+e = sqrt(1-(b^2/a^2));
 
-x = (a*C+h)*cos(lat)*cos(long);
-y = (a*C+h)*cos(lat)*sin(long);
-z = (a*S+h)*sin(lat);
+Rn = a/sqrt(1-e^2*sin(lat^2)); % m
+
+x = (Rn+h)*cos(lat)*cos(long);
+y = (Rn+h)*cos(lat)*sin(long);
+z = ((1-e^2)*Rn+h)*sin(lat);
 
 ECEF = [x y z];
 

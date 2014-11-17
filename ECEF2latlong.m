@@ -16,18 +16,19 @@ p = sqrt(x^2+y^2);
 
 for i = 1:4
     if i == 1
-        lat_gc(i) = atan2(p,z); % rad
+        lat_gc = atan2(p,z); % rad
     else
-        lat_gc(i) = atan2(p,z); % rad, geocentric
-        Rn = a/sqrt(1-e^2*sin(lat_gc(i))^2); % m
-        height = p*cos(lat_gc(i))+z*sin(lat_gc(i))-a/sqrt(1-e^2*sin(lat_gc(i))^2); % m
-%         height = p/cos(lat_gc(i))-Rn;
-        lat_gc(i+1) = atan((z/p)*(1-e^2*(Rn/(Rn+height))^-1)); % rad
+        Rn = a/sqrt(1-e^2*sin(lat_gc)^2); % m
+        %         height = p*cos(lat_gc(i))+z*sin(lat_gc(i))-a/sqrt(1-e^2*sin(lat_gc(i))^2); % m
+        height = p/cos(lat_gc)-Rn;
+        lat_gc_new = atan((z/p)*(1-e^2*(Rn/(Rn+height))^-1)); % rad
+        lat_gc = lat_gc_new;
     end
 end
 
-lat = 180/pi*lat_gc(end); % convert to deg
-long = 180/pi*long; % convert to deg
+lat = lat_gc(end); % convert to deg
+long = long; % convert to deg
+
 % [lat long height]
 
 % if lat > 90
