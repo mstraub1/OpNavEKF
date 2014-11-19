@@ -12,10 +12,10 @@ i = 45*(pi/180); % inclination in rad (polar orbit = 90 deg)
 w = 0; % right ascension of ascending node (rad)
 Omega = 0; % argument of periapsis (rad)
 nu = 0; % true anomaly (rad)
-t = [0:12*60*60]'; % 12 hours of data - time vector for ode45 (sec)
+t = [0:24*60*60]'; % 12 hours of data - time vector for ode45 (sec)
 
 % Propagate elements for length of time specified in t vector using ode45
-[R,V] = elementstoRV(alt,e,i,w,Omega,nu); 
+[R,V] = elementstoRV(alt,e,i,w,Omega,nu);
 x = [R; V]; % [m, m/s]
 options = odeset('abstol',1e-8,'reltol',1e-8);
 [t1,Pos] = ode45(@earthgravity_m,t,x,options);
@@ -28,7 +28,7 @@ angvel = 7.292e-5; % angular velocity of Earth (rad/s)
 % ECEF Coordinates
 n = 60;
 for m = 1:length(t1)
-
+    
     if m+1 > length(t1)
         break
     end
@@ -38,17 +38,19 @@ for m = 1:length(t1)
     else
         theta(m) = theta(m-1) + angvel*(t(m+1)-t(m));
     end
-
-rot = [cos(theta(m)) -sin(theta(m)) 0;
+    
+    rot = [cos(theta(m)) -sin(theta(m)) 0;
         sin(theta(m)) cos(theta(m)) 0;
         0 0 1];
     
-Pos_ECEF(m,:) = rot*Pos_ECI(m,:)';
-Vel_ECEF(m,:) = rot*Vel_ECI(m,:)';
-
-lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
-long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
-
+    Pos_ECEF(m,:) = rot*Pos_ECI(m,:)';
+    Vel_ECEF(m,:) = rot*Vel_ECI(m,:)';
+    
+    T_ECI_ECEF(:,:,m) = rot;
+    
+    lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
+    long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
+    
 end
 
 load coord.mat;
@@ -60,7 +62,7 @@ load coord.mat;
 % zlabel('z')
 % grid on
 % axis equal
-% % 
+% %
 % figure
 % plot(long,lat,'k')
 % hold on
@@ -70,43 +72,45 @@ load coord.mat;
 % ECEF Coordinates for lat/long conversion
 % load PosVel_ECEF.mat;
 
-% Initialize variables
-rsc = Pos_ECI(:,1:3); % ECI [m]
-Vel = Vel_ECI(:,1:3); % ECI [m/s]
-xtrue = [rsc'; Vel']; % ECI [m, mm/s]
-
-% Define constants
-sigma_pos = 500; % 100 m
-sigma_vel = .001; % 1 mm/s
-sigma_theta = 0.005*(pi/180); % 0.01 deg (converted to rad)
-T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
-options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
-
-% Create perturbed initial state
-rsc = xtrue(1:3,1) + 0*sigma_pos*randn(3,1); % use initial position with added noise
-rscdot = xtrue(4:6,1) + 0*sigma_vel*randn(3,1); % use initial velocity with added noise
-
-% Build state vector and covariance [m, mm/s]
-x = [rsc; rscdot]; % create initial state matrix
-P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
-z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
-
-n = 60;
-xtrue_short = xtrue(:,1:n:end);
-
-xhatminus(:,1) = x;
-xhatplus(:,1) = x;
-PlotP(1,:) = reshape(P,36,1);
-
-% % Inputing initial camera quaternion
-% thetacam = 90*pi/180;
-% e_thetacam = [0,1,0]/norm([0,1,0]);
-% qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
-
-Pos = z(1:6)';
 %%
-for mc = 1 % for monte carlo analysis
+for mc = 1:100 % for monte carlo analysis
     mc
+    
+    % Initialize variables
+    rsc = Pos_ECI(:,1:3); % ECI [m]
+    Vel = Vel_ECI(:,1:3); % ECI [m/s]
+    xtrue = [rsc'; Vel']; % ECI [m, mm/s]
+    
+    % Define constants
+    sigma_pos = 500; % 100 m
+    sigma_vel = .001; % 1 mm/s
+    sigma_theta = 0.005*(pi/180); % 0.01 deg (converted to rad)
+    T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
+    options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
+    
+    % Create perturbed initial state
+    rsc = xtrue(1:3,1) + 1*sigma_pos*randn(3,1); % use initial position with added noise
+    rscdot = xtrue(4:6,1) + 1*sigma_vel*randn(3,1); % use initial velocity with added noise
+    
+    % Build state vector and covariance [m, mm/s]
+    x = [rsc; rscdot]; % create initial state matrix
+    P = [sigma_pos^2*eye(3), zeros(3); zeros(3), (1000*sigma_vel)^2*eye(3)]; % create initial P matrix
+    z = [x; reshape(P,36,1)]; % compile state and covariance into column vector
+    
+    n = 60;
+    xtrue_short = xtrue(:,1:n:end);
+    
+    xhatminus(:,1) = x;
+    xhatplus(:,1) = x;
+    PlotP(1,:) = reshape(P,36,1);
+    
+    % % Inputing initial camera quaternion
+    % thetacam = 90*pi/180;
+    % e_thetacam = [0,1,0]/norm([0,1,0]);
+    % qcam = [sin(thetacam/2)*e_thetacam cos(thetacam/2)];
+    
+    Pos = z(1:6)';
+    
     for k_old = 1:n:length(t)
         
         if k_old+1 > length(t)
@@ -150,7 +154,7 @@ for mc = 1 % for monte carlo analysis
         % Check for coastline points within footprint limits
         coordfind = find(lat < max(box(:,1)) & lat > min(box(:,1)) & long < max(box(:,2)) & long > min(box(:,2)));
         if isempty(coordfind) == 0
-           if length(coordfind) > 1
+            if length(coordfind) > 1
                 latlong_est = [lat(coordfind(1:2)) long(coordfind(1:2))];
                 number = 2;
             else
@@ -159,23 +163,23 @@ for mc = 1 % for monte carlo analysis
             end
             for num = 1:number
                 [ox, oy, oz] = geo2ECI(latlong_est(num,1)+10*randn(1),latlong_est(num,2)+10*randn(1),height_obs); % vector of landmark
-                o = [ox; oy; oz];
+                o = T_ECI_ECEF(:,:,k)*[ox; oy; oz];
                 
                 % Compute measurement
                 s_true = o-xtrue_short(1:3,k);
-                eI = s_true/norm(s_true);
-                y = T_IC*eI;
-                %
-                %         dv = sigma_theta*randn(3,1); % generate random noise for position vector
-                %         dT = v_to_T(dv); % rotation matrix based on random noise in position vector of camera
-                %         y = dT*y_true;
-                %
-                %         s = o-xhatminus(1:3,k); % find LOS vector
-                %         s_norm = norm(s); % normalize LOS vector
-                %         eI = s/s_norm; % find unit vector in direction of inertial frame
+                eI_true = s_true/norm(s_true);
+                y_true = T_IC*eI_true;
+                
+                dv = sigma_theta*randn(3,1); % generate random noise for position vector
+                dT = v_to_T(dv); % rotation matrix based on random noise in position vector of camera
+                y = dT*y_true;
+                
+                s = o-xhatminus(1:3,k); % find LOS vector
+                s_norm = norm(s); % normalize LOS vector
+                eI = s/s_norm; % find unit vector in direction of inertial frame
                 h = T_IC*eI;
                 
-                H = T_IC*(1/norm(s_true))*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
+                H = T_IC*(1/norm(s))*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
                 
                 R = sigma_theta^2*(eye(3)-eI*eI'); % measurement covariance matrix
                 
@@ -192,7 +196,7 @@ for mc = 1 % for monte carlo analysis
         end
         
         PlotP(k,:) = reshape(Pplus,36,1); % reshape P into vector
-        %         errX(:,k) = [xhatplus(1:3,k)-xtrue_short(1:3,k); (xhatplus(4:6,k)-xtrue_short(4:6,k))]; % Plot error
+        errX(:,k) = [xhatplus(1:3,k)-xtrue_short(1:3,k); (xhatplus(4:6,k)-xtrue_short(4:6,k))]; % Plot error
         
         x = xhatplus(:,k); % update state measurement
         P = Pplus; % update covariance measurement
@@ -220,9 +224,10 @@ for mc = 1 % for monte carlo analysis
         % Rotating covariances from inertial to spacecraft frame
         P_pos_rot = T_BI'*P_pos*T_BI;
         P_vel_rot = T_BI'*P_vel*T_BI;
+        
         % Rotate state
-        %         err_pos_rot(:,count) = T_BI'*errX(1:3,count);
-        %         err_vel_rot(:,count) = T_BI'*errX(4:6,count);
+        err_pos_rot(:,count) = T_BI'*errX(1:3,count);
+        err_vel_rot(:,count) = T_BI'*errX(4:6,count);
         
         P_pos_rot_diag(:,count) = sqrt(diag(P_pos_rot));
         P_vel_rot_diag(:,count) = sqrt(diag(P_vel_rot));
@@ -234,30 +239,30 @@ for mc = 1 % for monte carlo analysis
     figure(1)
     subplot(3,1,1)
     hold on
-    %     plot(err_pos_rot(1,2:end))
-    plot(P_pos_rot_diag(1,2:end),'k')
-    plot(-P_pos_rot_diag(1,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
+    plot(err_pos_rot(1,2:end))
+    plot(3*P_pos_rot_diag(1,2:end),'k')
+    plot(-3*P_pos_rot_diag(1,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_pos2 3*maxstd_pos2])
     title('Error in X Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
     subplot(3,1,2)
     hold on
-    %     plot(err_pos_rot(2,2:end))
-    plot(P_pos_rot_diag(2,2:end),'k')
-    plot(-P_pos_rot_diag(2,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
+    plot(err_pos_rot(2,2:end))
+    plot(3*P_pos_rot_diag(2,2:end),'k')
+    plot(-3*P_pos_rot_diag(2,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_pos2 3*maxstd_pos2])
     title('Error in Y Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
     
     subplot(3,1,3)
     hold on
-    %     plot(err_pos_rot(3,2:end))
-    plot(P_pos_rot_diag(3,2:end),'k')
-    plot(-P_pos_rot_diag(3,2:end),'k')
-    axis([0 length(PlotP) -maxstd_pos2 maxstd_pos2])
+    plot(err_pos_rot(3,2:end))
+    plot(3*P_pos_rot_diag(3,2:end),'k')
+    plot(-3*P_pos_rot_diag(3,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_pos2 3*maxstd_pos2])
     title('Error in Z Position (m)')
     xlabel('Time (min)')
     ylabel('Magnitude (m)')
@@ -265,33 +270,31 @@ for mc = 1 % for monte carlo analysis
     figure(2)
     subplot(3,1,1)
     hold on
-    %     plot(err_vel_rot(1,:))
-    plot(P_vel_rot_diag(1,2:end),'k')
-    plot(-P_vel_rot_diag(1,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
+    plot(err_vel_rot(1,:))
+    plot(3*P_vel_rot_diag(1,2:end),'k')
+    plot(-3*P_vel_rot_diag(1,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_vel2 3*maxstd_vel2])
     title('Error in X Velocity (mm/s)')
     xlabel('Time (min)')
     ylabel('Magnitude (mm/s)')
     
     subplot(3,1,2)
     hold on
-    %     plot(err_vel_rot(2,:))
-    plot(P_vel_rot_diag(2,2:end),'k')
-    plot(-P_vel_rot_diag(2,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
+    plot(err_vel_rot(2,:))
+    plot(3*P_vel_rot_diag(2,2:end),'k')
+    plot(-3*P_vel_rot_diag(2,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_vel2 3*maxstd_vel2])
     title('Error in Y Velocity (mm/s)')
     xlabel('Time (min)')
     ylabel('Magnitude (mm/s)')
     
     subplot(3,1,3)
     hold on
-    %     plot(err_vel_rot(3,:))
-    plot(P_vel_rot_diag(3,2:end),'k')
-    plot(-P_vel_rot_diag(3,2:end),'k')
-    axis([0 length(PlotP) -maxstd_vel2 maxstd_vel2])
+    plot(err_vel_rot(3,:))
+    plot(3*P_vel_rot_diag(3,2:end),'k')
+    plot(-3*P_vel_rot_diag(3,2:end),'k')
+    axis([0 length(PlotP) -3*maxstd_vel2 3*maxstd_vel2])
     title('Error in Z Velocity (mm/s)')
     xlabel('Time (min)')
-    
-    
     
 end
