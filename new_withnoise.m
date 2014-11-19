@@ -43,22 +43,37 @@ for m = 1:length(t1)
         sin(theta(m)) cos(theta(m)) 0;
         0 0 1];
     
+    T_ECI_to_ECEF(:,:,m) = rot;
     Pos_ECEF(m,:) = rot*Pos_ECI(m,:)'; % ECEF
     Vel_ECEF(m,:) = rot*Vel_ECI(m,:)'; % ECEF
     
     % Check Coordinate Frames
-    [lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(m,1),Pos_ECEF(m,2),Pos_ECEF(m,3));
-    o_ECEF(m,:) = latlong2ECEF(lat_obs,long_obs,height_obs); % vector of landmark
-    o_ECI(m,:) = inv(rot)*o_ECEF(m,:)';
-%     diff(m,:) = [Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
-    
-    diff(m,:) = [Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
-end
-        
-o_ECEF = [ox_ECEF; oy_ECEF; oz_ECEF];
+    %[lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(m,1),Pos_ECEF(m,2),Pos_ECEF(m,3));
+   % o_ECEF(m,:) = latlong2ECEF(lat_obs,long_obs,height_obs); % vector of landmark
+   % o_ECI(m,:) = inv(rot)*o_ECEF(m,:)';
+   % diff(m,:) = [Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
+%     
+%     lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
+%     long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
 
-lat_calc(m) = (180/pi)*(asin(Pos_ECEF(m,3)/norm(Pos_ECEF(m,:)))); % deg
-long_calc(m) = (180/pi)*(atan2(Pos_ECEF(m,2),Pos_ECEF(m,1))); % deg
+%     diff(m,:) = o_ECEF(m,:) - o_ECI(m,:);%[Pos_ECI(m,1),Pos_ECI(m,2),Pos_ECI(m,3)] - o_ECEF(m,:);
+end
+
+% figure
+% hold on
+% plot(Pos_ECI(:,1),'r')
+% plot(o_ECEF(:,1),'g')
+% plot(diff(:,1),'b')
+% legend('Pos ECI','o ECEF','Error')
+% figure
+% hold on
+% plot(Pos_ECI(:,1))
+% plot(Pos_ECEF(:,1),'--')
+% plot(Pos_ECI(:,2),'r')
+% plot(Pos_ECEF(:,2),'r--')
+% plot(Pos_ECI(:,3),'k')
+% plot(Pos_ECEF(:,4),'k--')
+
     
 load coord.mat;
 
@@ -77,12 +92,12 @@ load coord.mat;
 
 % Initialize variables
 rsc = Pos_ECI(:,1:3); % ECI [m]
-Vel = Vel_ECI(:,1:3); % ECI [m/s]
+Vel = Vel_ECI(:,1:3); % ECI [mm/s]
 xtrue = [rsc'; Vel']; % ECI [m, mm/s]
 
 % Define constants
 sigma_pos = 500; % 100 m
-sigma_vel = .05; % 1 mm/s
+sigma_vel = .05; % 1 m/s
 sigma_theta = 0.01*(pi/180); % 0.01 deg (converted to rad)
 T_IC = eye(3,3); % rotation matrix from camera to inertial frame, assuming camera is nadir
 options = odeset('abstol',1e-8,'reltol',1e-8); % set tolerances for ode45
@@ -125,6 +140,7 @@ for mc = 1 % for monte carlo analysis
             k = ((k_old-1)/n)+2;
         end
         
+        z_true(end,:)'
         [t2,Posout] = ode45(@earthgravity,0:60,z_true(end,:)',options);
         if k_old == 1
             T2 = t2;
@@ -174,6 +190,8 @@ for mc = 1 % for monte carlo analysis
 %         
 %         o_ECEF = [ox_ECEF; oy_ECEF; oz_ECEF];
 
+        [lat_obs,long_obs,height_obs] =  ECEF2latlong(Pos_ECEF(k,1),Pos_ECEF(k,2),Pos_ECEF(k,3));
+ 
         delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
         delta_long = GIFOV/(111.32e3*cos(lat_obs*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
         top = [lat_obs+delta_lat, long_obs+delta_long]; % convert to m [1deg = 111.32*cos(lat)]
@@ -195,29 +213,30 @@ for mc = 1 % for monte carlo analysis
                 number = 1;
             end
             for num = 1:number
-%                 [ox, oy, oz] = geo2ECI(latlong_est(num,1)+10*randn(1),latlong_est(num,2)+10*randn(1),height_obs); % vector of landmark
-                %                 o = [ox, oy, oz];
+
+                [ox, oy, oz] = geo2ECI(latlong_est(num,1)+10*randn(1),latlong_est(num,2)+10*randn(1),height_obs); % vector of landmark
+                o_ECI = T_ECI_to_ECEF(:,:,k)'* [ox, oy, oz]';
 
                 % Compute measurement
-                s_true = o-xtrue_short(1:3,k);
+                s_true = o_ECI-xtrue_short(1:3,k);
                 eI_true = s_true/norm(s_true);
                 y_true = T_IC*eI_true;
                 dv = sigma_theta*randn(3,1); % generate random noise for position vector
                 dT = v_to_T(dv); % rotation matrix based on random noise in position vector of camera
                 y = dT*y_true;
                 
-                s = o-xhatminus(1:3,k); % find LOS vector
+                s = o_ECI-xhatminus(1:3,k); % find LOS vector
                 s_norm = norm(s); % normalize LOS vector
                 eI = s/s_norm; % find unit vector in direction of inertial frame
                 h = T_IC*eI;
                 
-                H = T_IC*(1/norm(s_true))*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
+                H = T_IC*(1/norm(s))*[eI*eI'-eye(3) zeros(3)]; % measurement sensitivity matrix
                 
                 R = sigma_theta^2*(eye(3)-eI*eI'); % measurement covariance matrix
                 
                 K = (Pminus*H')/(H*Pminus*H'+R+(0.5*trace(R))*(eI*eI')); % find optimal Kalman gain
                 
-                xhatplus(:,k) = xhatminus(:,k) + K*(y-h); % state update
+                xhatplus(:,k) = xhatminus(:,k) + 0*K*(y-h); % state update
                 Pplus = (eye(6)-K*H)*Pminus*(eye(6)-K*H)' + K*R*K'; % covariance update
             end
         else

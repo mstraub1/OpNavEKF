@@ -4,7 +4,7 @@ close all
 
 % Simulate Orbit Parameters/Get Position/lat/long of Coastline Points from MATLAB
 load scdatawithrot.mat % converts orbital elements to position and velocity vectors to simulate orbit of spacecraft
-load ECEF.mat % converted lat/long data from MATLAB to ECEF coordinates
+load PosVel_ECEF.mat % converted lat/long data from MATLAB to ECEF coordinates
 load coast % provided MATLAB lat/long points to map coastlines (latlong2ECEF.m, checked with ECEF2latlong.m)
 
 % Define constants
