@@ -1,0 +1,87 @@
+\begin{thebibliography}{10}
+\newcommand{\enquote}[1]{``#1''}
+
+\bibitem{Christian:2012}
+Christian, J.~A. and Lightsey, E.~G., \enquote{{Onboard Image-Processing
+  Algorithm for a Spacecraft Optical Navigation Sensor System},} {\em {Journal
+  of Spacecraft and Rockets}\/}, Vol.~49, No.~2, 2012, pp.~337--352.
+
+\bibitem{Owen:2011}
+Owen, W., \enquote{Methods of Optical Navigation,} {\em {AAS Spaceflight
+  Mechanics Conference}\/}, No. AAS 11-215, New Orleans, LA, February 2011.
+
+\bibitem{Liu:2004}
+Liu, H. and Jezek, K.~C., \enquote{{Automated Extraction of Coastline from
+  Satellite Imagery by Integrating Canny Edge Detection and Locally Adaptive
+  Thresholding Methods},} {\em {International Journal of Remote Sensing}\/},
+  Vol.~25, No.~5, 2004, pp.~937--958.
+
+\bibitem{Cheng:2003}
+Cheng, Y. and Miller, J.~K., \enquote{{Autonomous Landmark Based Spacecraft
+  Navigation System},} {\em {AAS/AIAA Astrodynamics Specialist Conference}\/},
+  No. AAS 03-223, Ponce, Puerto Rico, February 2003.
+
+\bibitem{Rowell:2013}
+Rowell, N., Parkes, S., and Dunstan, M., \enquote{{Image Processing for Near
+  Earth Object Optical Guidance Systems},} {\em {IEEE Transactions on Aerospace
+  and Electronic Systems}\/}, Vol.~49, No.~2, 2013, pp.~1057--1072.
+
+\bibitem{Hanak}
+Hanak, C., {\em Lost in Low Lunar Orbit Crater Pattern Detection and
+  Identification\/}, Ph.D. thesis, University of Texas at Austin, 2009.
+
+\bibitem{Rohr:2011}
+Rohrschneider, R.~R., \enquote{{Terrain Relative Navigation Using Crater
+  Identification in Surface Topography Data},} {\em {AIAA Guidance, Navigation,
+  and Control Conference}\/}, No. AIAA 2001-6490, Portland, Oregon, August
+  2011.
+
+\bibitem{Cheng:2003b}
+Cheng, Y., Johnson, A.~E., Matthies, L.~H., and Olson, C.~F., \enquote{{Optical
+  Landmark Detection for Spacecraft Navigation},} {\em {AAS/AIAA Astrodynamics
+  Specialist Conference}\/}, No. AAS 02-224, Ponce, Puerto Rico, February 2003.
+
+\bibitem{SeenFromSpace}
+{National Aeronautics and Space Administration}, \enquote{Earth Features Seen
+  From Space,} May 1999.
+
+\bibitem{Canny:1986}
+Canny, J., \enquote{{A Computational Approach to Edge Detection},} {\em {IEEE
+  Transactions on Pattern Analysis and Machine Intelligence}\/}, Vol.~8, No.~6,
+  1986, pp.~679--698.
+
+\bibitem{Heene:2000}
+Heene, G. and Gautama, S., \enquote{{Optimisation of a Coastline Extraction
+  Algorithm for Object-Oriented Matching of Multisensor Satellite Imagery},}
+  {\em {IEEE Geoscience and Remote Sensing Symposium}\/}, Vol.~6, 2000,
+  pp.~2632--2634.
+
+\bibitem{Patt:1997}
+Patt, F.~S., Woodward, R.~H., and Gregg, W.~W., \enquote{{An Automated Method
+  for Navigation Assessment for Earth Survey Sensors using Target Islands},}
+  {\em {International Journal of Remote Sensing}\/}, Vol.~18, No.~16, 1997,
+  pp.~3311--3336.
+
+\bibitem{ESRITechDes}
+Environmental Systems Research~Institute, I., \enquote{ESRI Shapefile Technical
+  Description,} 1998.
+
+\bibitem{Gelb}
+Gelb, A., {\em Applied Optimal Estimation\/}, The M.I.T. Press, Cambridge, MA,
+  1974.
+
+\bibitem{KalmanFiltering}
+Brown, R.~G. and Hwang, P. Y.~C., {\em Introduction to Random Signals and
+  Applied Kalman Filtering\/}, John Wiley and Sons, Inc., Hoboken, NJ, 1997.
+
+\bibitem{Shuster:1981}
+Shuster, M.~D. and Oh, S.~D., \enquote{{Three-axis Attitude Determination from
+  Vector Observations},} {\em {Journal of Guidance, Control, and Dynamics}\/},
+  Vol.~4, No.~1, 1981, pp.~70--77.
+
+\bibitem{Liounis:2013}
+Liounis, A., Daniel, S., and Christian, J.~A., \enquote{{Autonomous Navigation
+  System Performance in the Earth-Moon System},} {\em {AIAA Space
+  Conference}\/}, 2013.
+
+\end{thebibliography}
