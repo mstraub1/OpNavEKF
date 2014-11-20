@@ -10,7 +10,7 @@ load coast % provided MATLAB lat/long points to map coastlines (latlong2ECEF.m, 
 % Define constants
 rsc = Pos_rot;
 Vel = Vel_rot;
-%
+
 %%%%%%%%% Full resolution GSHHG database %%%%%%%%%%%%%%%%%%%
 % world = gshhs('gshhs_l.b');
 % figure
@@ -44,7 +44,7 @@ GIFOV = 2*height*tan(FOV/2); % km
 FOV_new = adjustFOV(GIFOV); % adjust to Matlab's scale [deg]
 
 n = 5*60;
-for k = 1:n:length(t) %21301% = Great Lakes
+for k = 1:n:length(t) %9000 = Hawaii
     if k+1 > length(t)
         break
     end
@@ -58,21 +58,13 @@ for k = 1:n:length(t) %21301% = Great Lakes
         camva(FOV_new); % deg
         campos([rsc(k,1) rsc(k,2) rsc(k,3)]);
     end
-     drawnow
-%              waitforbuttonpress
-
-%     % Find FOV footprint limits in terms of lat/long
-%     delta_lat = GIFOV/110.54e3; % convert to km [1deg = 110.54 km]
-%     delta_long = GIFOV/(111.32e3*cosd(lat_calc(k))); % convert to km [1deg = 111.32*cos(lat)]
-%     long_max = long_calc(k)+delta_long;
-%     long_min = long_calc(k)-delta_long;
-%     lat_max = lat_calc(k)+delta_lat;
-%     lat_min = lat_calc(k)-delta_lat;
+    drawnow
+%                  waitforbuttonpress
     
-%     k = 19934;
+    % Find FOV footprint limits in terms of lat/long
     delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
     delta_long = GIFOV/(111.32e3*cos(lat_calc(k)*(pi/180))); % convert to m [1deg = 111.32*cos(lat)]
-
+    
     latbound(k,:) = [lat_calc(k)+delta_lat;
         lat_calc(k)+delta_lat;
         lat_calc(k)-delta_lat;
@@ -83,7 +75,7 @@ for k = 1:n:length(t) %21301% = Great Lakes
         long_calc(k)-GIFOV/(111.32e3*cos(latbound(k,3)*(pi/180)));
         long_calc(k)+GIFOV/(111.32e3*cos(latbound(k,4)*(pi/180)))];
     
-    coordfind = find(long < longbound(k,1) & long < longbound(k,4) & long > longbound(k,3) ... 
+    coordfind = find(long < longbound(k,1) & long < longbound(k,4) & long > longbound(k,3) ...
         & long > longbound(k,2) & lat > latbound(k,3) & lat < latbound(k,2));
     
     if isempty(coordfind) == 1
@@ -95,27 +87,75 @@ for k = 1:n:length(t) %21301% = Great Lakes
             coast_plot(i,:) = coast(random,:);
         end
     end
-    
 end
 
-
+%% Plots
 figure
 hold on
-plot(long,lat,'k','LineWidth',1.05)
-% plot(coast_plot(:,1),coast_plot(:,2),'r*')
+plot(long,lat,'k','LineWidth',1)
 plot(long_calc(1,1:end), lat_calc(1,1:end),'.','MarkerSize',0.75,'Color',[0.6, 0.6, 0.6])
 for k = 1:n:length(longbound)
     hold on
     plot([longbound(k,:) longbound(k,1)],[latbound(k,:) latbound(k,1)],'b','LineWidth',1.25,'Color',[0.8, 0.8, 0.8]);
 end
-
-% axis equal
-% title('Simulated Earth Coverage based on ISS orbit at 51.6^{\circ} inclination, 1000 km altitude with images taken once every 5 minutes')
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
-% axis([-180 180 -90 90])
 
 set(findall(gcf,'type','text'),'FontSize',16)
 
-% ECEF = latlong2ECEF(lat_calc(k),long_calc(k),0);
-% plot3(ECEF(1),ECEF(2),ECEF(3),'r*')
+%% Get Position Vector of "known" Landmark
+% datacursormode on
+% dcmObj = datacursormode(gcf);
+% set(dcmObj,'SnapToDataVertex','off','Enable','on')
+% 
+% disp('Click Point and Press Enter:')
+% pause
+% location = getCursorInfo(dcmObj);
+% ox1 = location.Position(1);
+% oy1 = location.Position(2);
+% oz1 = location.Position(3);
+% o = [ox1; oy1; oz1];
+% close, clc
+
+ox1 = Pos_rot(9000,1);
+oy1 = Pos_rot(9000,2);
+oz1 = Pos_rot(9000,3);
+o = [ox1; oy1; oz1];
+
+[latitude1,longitude1,height1] = ECEF2latlong(ox1,oy1,oz1);
+% latitude1
+% longitude1
+ECEF_surf = latlong2ECEF(latitude1,longitude1,0); % position on surface of sphere
+ECEF = latlong2ECEF(latitude1,longitude1,height1);
+diff = (o'-ECEF_surf) % m
+
+% disp('Click Second Point and Press Enter:')
+% pause
+% point = getCursorInfo(dcmObj);
+% Px2 = point.Position(1);
+% Py2 = point.Position(2);
+% Pz2 = point.Position(3);
+% o2 = [Px2 Py2 Pz2];
+% 
+% [latitude2,longitude2,height2] = ECEF2latlong(Px2,Py2,Pz2);
+% ECEF_surf2 = latlong2ECEF(latitude2,longitude2,0); % position on surface of sphere
+% 
+% d = latlong2distance(latitude1,longitude1,latitude2,longitude2)
+% d1 = sqrt(abs(Px2-ox1)^2+abs(Py2-oy1)^2+abs(Pz2-oz1)^2)
+
+% Map back to ellipsoid
+figure
+[x,y,z] = ellipsoid(0,0,0,a,a,b);
+globe = surf(x,y,-z,'EdgeColor','none');
+axis equal, axis off
+h1 = globe;
+h2 = axesm('globe','Geoid',1000*6378);
+% h3 = gridm('GLineStyle','-','Gcolor',[.8 .8 .8]);
+h4 = plotm(lat,long);
+set(globe,'CData',A,'FaceColor','texturemap');
+hold on
+plot3(ECEF_surf(1), ECEF_surf(2), ECEF_surf(3),'r*');
+% plot3(ECEF_surf2(1), ECEF_surf2(2), ECEF_surf2(3),'r*');
+view([ECEF(1), ECEF(2), ECEF(3)])
+camup([0 0 1])
+% s = ECEF-Pos_rot(n,:);

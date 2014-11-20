@@ -171,7 +171,7 @@ Further suppose that at some time, $t_{k}$, a new measurement becomes available 
 \tilde{\textbf{y}}_k=\textbf{h}(\textbf{x}_k)+\textbf{u}_k
 \end{equation}
 %
-where $\textbf{u}_k \sim \mathcal{N}(0,\textbf{R}_k)$ and $\textbf{h}(\textbf{x})$ is the nonlinear measurement model. 
+where $\textbf{u}_k \sim \mathcal{N}(0,\textbf{R}_k)$ and $\textbf{h}(\textbf{x})$ is the nonlinear measurement model, described in detail in Section \ref{ref:MeasModel}.
 %\begin{equation}
 %\label{eq:xdot}
 %\dot{\textbf{x}}=\textbf{f}(\hat{\textbf{x}},t)
@@ -199,7 +199,7 @@ where $\textbf{H}_k$ is the measurement sensitivity matrix,
 \textbf{H}_k\triangleq\frac{\partial{\textbf{h}(\textbf{x})}}{\partial{\textbf{x}}}\Big{|}_{\textbf{x}=\hat{\textbf{x}}}
 \end{equation}
 %
-Finally, the optimal update is achieved when $\textbf{K}_k$ is chosen to be the Kalman gain, 
+Finally, the optimal update is achieved when $\textbf{K}_k$ is chosen to be the Kalman gain, where
 %
 \begin{equation} \label{eq:K}
 \textbf{K}_k=\textbf{P}^-\textbf{H}_k^T(\textbf{H}_k\textbf{P}\textbf{H}_k^T+\textbf{R}_k)^{-1}
@@ -251,10 +251,10 @@ Since both $\dot{\textbf{x}}$ and $\dot{\textbf{P}}$ are now known, each can be 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Measurement Model for Coastline Points in Images}
-Images produce line-of-sight (LOS) measurements.  These measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft as shown in Fig. \ref{fig:LOSgeometry}.  From this figure, it is clear that 
+\subsection{Measurement Model for Coastline Points in Images} \label{ref:MeasModel}
+Images produce line-of-sight (LOS) measurements.  These measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft as shown in Fig. \ref{fig:LOSgeometry}.  From this figure, it is clear that the following geometric relations are obtained by
 %
-\begin{figure}[t!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth,trim=0.8in 1.5in 0.3in 1in,clip]{LOSgeometry} %lbrt
 \caption{Line-of-sight vectors for measurement model}
@@ -313,7 +313,7 @@ For this simulation, it is important to ensure that coastlines will be visible b
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth]{contourplot} %lbrt
-\caption{Orbit-specific contour plot showing the percentage of time coastline is observable based on inclination and FOV at a 1000km circular orbit with images taken once every five minutes.}
+\caption{Orbit-specific contour plot showing the percentage of time coastline is observable based on inclination and FOV at a 1000 km circular orbit with images taken once every five minutes.}
 \label{fig:contourplot}
 \end{figure}
 
@@ -325,13 +325,13 @@ This section discusses the results obtained from simulated data at a 1000 km alt
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_pos}
+  \includegraphics[width=0.9\linewidth]{MC_pos90}
   \caption{Position Error at i=90\degree}
   \label{fig:mcpos}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth} 
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_vel}
+  \includegraphics[width=0.9\linewidth]{MC_vel90}
   \caption{Velocity Error at i=90\degree}
   \label{fig:coastline}
 \end{subfigure}

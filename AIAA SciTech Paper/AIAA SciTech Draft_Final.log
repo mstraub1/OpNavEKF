@@ -1,7 +1,9 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.5.2)  19 NOV 2014 13:29
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.5.2)  20 NOV 2014 13:40
 entering extended mode
 **AIAA*SciTech*Draft_Final.tex
-("F:\ASEL_Research\OpNav\AIAA SciTech Paper\AIAA SciTech Draft_Final.tex"
+
+("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
+aft_Final.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -15,7 +17,7 @@ an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
 ishmax, welsh, loaded.
 
 If latex fails to find aiaa-tc, read the README file!
-("F:\ASEL_Research\OpNav\AIAA SciTech Paper\aiaa-tc.cls"
+("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\aiaa-tc.cls"
 Document Class: aiaa-tc 2004/11/23 v3.8 AIAA technical conference paper
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\article.cls"
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
@@ -229,7 +231,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
-("F:\ASEL_Research\OpNav\AIAA SciTech Paper\AIAA SciTech Draft_Final.aux"
+("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
+aft_Final.aux"
 
 LaTeX Warning: Label `eq:F' multiply defined.
 
@@ -362,79 +365,85 @@ File: Michigan.png Graphic file (type png)
  <use Michigan.png>
 Package pdftex.def Info: Michigan.png used on input line 110.
 (pdftex.def)             Requested size: 207.16763pt x 155.37572pt.
- [3 <F:/ASEL_Research/OpNav/AIAA SciTech Paper/ISScoverage.png (PNG copy)>] [4 
-<F:/ASEL_Research/OpNav/AIAA SciTech Paper/Michigan_sat.png> <F:/ASEL_Research/
-OpNav/AIAA SciTech Paper/Michigan.png (PNG copy)>]
-<LOSgeometry.pdf, id=35, 722.7pt x 542.025pt>
+ [3 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/ISScoverage.
+png (PNG copy)>] [4 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Pa
+per/Michigan_sat.png> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech 
+Paper/Michigan.png (PNG copy)>] <LOSgeometry.pdf, id=35, 722.7pt x 542.025pt>
 File: LOSgeometry.pdf Graphic file (type pdf)
- <use LOSgeometry.pdf>
+
+<use LOSgeometry.pdf>
 Package pdftex.def Info: LOSgeometry.pdf used on input line 259.
 (pdftex.def)             Requested size: 352.3198pt x 197.9326pt.
- [5 <F:/ASEL_Research/OpNav/AIAA SciTech Paper/LOSgeometry.pdf>]
-<contourplot.png, id=60, 418.66759pt x 314.00069pt>
+ [5 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/LOSgeometry.
+pdf>] <contourplot.png, id=60, 418.66759pt x 314.00069pt>
 File: contourplot.png Graphic file (type png)
- <use contourplot.png>
+
+<use contourplot.png>
 Package pdftex.def Info: contourplot.png used on input line 315.
 (pdftex.def)             Requested size: 352.3236pt x 264.24268pt.
+ <MC_pos90.png, id=61, 421.575pt x 316.18124pt>
+File: MC_pos90.png Graphic file (type png)
 
-<MC_pos.png, id=61, 421.575pt x 316.18124pt>
-File: MC_pos.png Graphic file (type png)
- <use MC_pos.png>
-Package pdftex.def Info: MC_pos.png used on input line 328.
+<use MC_pos90.png>
+Package pdftex.def Info: MC_pos90.png used on input line 328.
 (pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
+ <MC_vel90.png, id=62, 421.575pt x 316.18124pt>
+File: MC_vel90.png Graphic file (type png)
 
-<MC_vel.png, id=62, 421.575pt x 316.18124pt>
-File: MC_vel.png Graphic file (type png)
- <use MC_vel.png>
-Package pdftex.def Info: MC_vel.png used on input line 334.
+<use MC_vel90.png>
+Package pdftex.def Info: MC_vel90.png used on input line 334.
 (pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
-
-<MC_pos45.png, id=63, 422.32782pt x 316.18124pt>
+ <MC_pos45.png, id=63, 421.575pt x 316.18124pt>
 File: MC_pos45.png Graphic file (type png)
- <use MC_pos45.png>
+
+<use MC_pos45.png>
 Package pdftex.def Info: MC_pos45.png used on input line 346.
-(pdftex.def)             Requested size: 211.39537pt x 158.2639pt.
-
-<MC_vel45.png, id=64, 422.32782pt x 316.18124pt>
+(pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
+ <MC_vel45.png, id=64, 421.575pt x 316.18124pt>
 File: MC_vel45.png Graphic file (type png)
- <use MC_vel45.png>
-Package pdftex.def Info: MC_vel45.png used on input line 352.
-(pdftex.def)             Requested size: 211.39537pt x 158.2639pt.
 
-<MC_pos0.png, id=65, 421.575pt x 316.18124pt>
+<use MC_vel45.png>
+Package pdftex.def Info: MC_vel45.png used on input line 352.
+(pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
+ <MC_pos0.png, id=65, 421.575pt x 316.18124pt>
 File: MC_pos0.png Graphic file (type png)
- <use MC_pos0.png>
+
+<use MC_pos0.png>
 Package pdftex.def Info: MC_pos0.png used on input line 364.
 (pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
-
-<MC_vel0.png, id=66, 421.575pt x 316.18124pt>
+ <MC_vel0.png, id=66, 421.575pt x 316.18124pt>
 File: MC_vel0.png Graphic file (type png)
- <use MC_vel0.png>
+
+<use MC_vel0.png>
 Package pdftex.def Info: MC_vel0.png used on input line 370.
 (pdftex.def)             Requested size: 211.39165pt x 158.54373pt.
- [6 <F:/ASEL_Research/OpNav/AIAA SciTech Paper/contourplot.png (PNG copy)>]
-Overfull \vbox (12.75662pt too high) has occurred while \output is active []
+ [6 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/contourplot.
+png (PNG copy)>]
+Overfull \vbox (13.03645pt too high) has occurred while \output is active []
 
 
-[7 <F:/ASEL_Research/OpNav/AIAA SciTech Paper/MC_pos.png (PNG copy)> <F:/ASEL_R
-esearch/OpNav/AIAA SciTech Paper/MC_vel.png (PNG copy)> <F:/ASEL_Research/OpNav
-/AIAA SciTech Paper/MC_pos45.png (PNG copy)> <F:/ASEL_Research/OpNav/AIAA SciTe
-ch Paper/MC_vel45.png (PNG copy)> <F:/ASEL_Research/OpNav/AIAA SciTech Paper/MC
-_pos0.png (PNG copy)> <F:/ASEL_Research/OpNav/AIAA SciTech Paper/MC_vel0.png (P
-NG copy)>]
-("F:\ASEL_Research\OpNav\AIAA SciTech Paper\AIAA SciTech Draft_Final.bbl")
-
+[7 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos90.png 
+(PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_v
+el90.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech P
+aper/MC_pos45.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA 
+SciTech Paper/MC_vel45.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNav
+EKF/AIAA SciTech Paper/MC_pos0.png (PNG copy)> <C:/Users/Miranda/Documents/GitH
+ub/OpNavEKF/AIAA SciTech Paper/MC_vel0.png (PNG copy)>]
+("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
+aft_Final.bbl") 
 AED: lastpage setting LastPage
-[8] ("F:\ASEL_Research\OpNav\AIAA SciTech Paper\AIAA SciTech Draft_Final.aux")
+[8]
+("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
+aft_Final.aux")
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 4145 strings out of 493921
- 59962 string characters out of 3144871
- 127910 words of memory out of 3000000
- 7368 multiletter control sequences out of 15000+200000
+ 4146 strings out of 493921
+ 60217 string characters out of 3144871
+ 127921 words of memory out of 3000000
+ 7369 multiletter control sequences out of 15000+200000
  14375 words of font info for 55 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  42i,13n,45p,1544b,483s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -459,7 +468,7 @@ blic/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
 c/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/
 amsfonts/cm/cmti8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/ams
 fonts/symbols/msam10.pfb>
-Output written on "AIAA SciTech Draft_Final.pdf" (8 pages, 654395 bytes).
+Output written on "AIAA SciTech Draft_Final.pdf" (8 pages, 678250 bytes).
 PDF statistics:
  144 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
