@@ -49,15 +49,20 @@ In order to meet the demands of future space missions, it is beneficial for spac
 
 \begin{tabbing}
   XXX \= \kill% this line sets tab stop
-  $J$ \> Jacobian Matrix \\
-  $f$ \> Residual value vector \\
-  $x$ \> Variable value vector \\
-  $F$ \> Force, N \\
-  $m$ \> Mass, kg \\
-  $\Delta x$ \> Variable displacement vector \\
-  $\alpha$ \> Acceleration, m/s\textsuperscript{2} \\[5pt]
-  \textit{Subscript}\\
-  $i$ \> Variable number \\
+  $\textbf{x}$ \> State Vector \\
+  $\textbf{y}$ \> Measurement Vector \\
+  $\textbf{P}$ \> State Covariance Matrix \\
+  $\textbf{F}$ \> Jacobian Matrix \\
+  $\textbf{Q}$ \> Process Noise Covariance Matrix \\
+  $\textbf{H}$ \> Measurement Sensitivity Matrix \\
+  $\textbf{K}$ \> Kalman Gain \\
+  $\textbf{R}$ \> Measurement Covariance Matrix \\
+  $\textbf{r}$ \> Spacecraft Position Vector \\
+  $\textbf{s}$ \> Vector from spacecraft to observed landmark \\
+  $\textbf{o}$ \> Vector from center of Earth to observed landmark \\
+  $\textbf{e}$ \> Unit vector in direction of observed landmark \\
+  $\textbf{T}$ \> Rotation Matrix \\
+  $\mu$ \> Gravitational Parameter \\ [5pt]
  \end{tabbing}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,43 +92,42 @@ An additional problem that arises with coastline extraction and feature selectio
 \subsection{Georeferenced Database}
 A few options are available to provide a reference of coastlines for optical navigation.  One of the most well-known databases is provided by the National Geophysical Data Center (NGDC), part of the National Oceanic and Atmospheric Administration (NOAA).  World shorelines are provided through the Global Self-Consistent, Hierarchical, High-resolution Geography Database (GSHHG) in the form of shapefiles.  A shapefile stores geometric location and attribute information for spatial features in a data set where the geometry of a feature is stored as a shape comprising of a set of vector coordinates \cite{ESRITechDes}.  Shapefiles can support point, line, and area features which allow for coastline and other water/land boundaries to be stored.  These files are able to be read and written using a variety of programs.  The NGDC provides a software called GEODAS-NG that has the capability of reading the coastline data from the GSHHG or writing shapefiles from a provided input image.  
 
-It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting the data with respect to latitude and longitude coordinates.  To simulate this concept, MATLAB was used to construct a model of the Earth as viewed by a satellite in a 1,000 km near-polar orbit.  A near-polar orbit was chosen in order to ensure most of the Earth's surface is observed.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing.  With this assumption, the spacecraft position vectors were calculated using basic orbital mechanics equations and used as the position of the camera.  Figure \ref{fig:matlabstuff} shows an example of this simulation.
+It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting the data with respect to latitude and longitude coordinates.  To simulate this concept, MATLAB was used to construct a model of the Earth as viewed by a satellite in a 1,000 km near-polar orbit.  A near-polar orbit was chosen in order to ensure most of the Earth's surface is observed.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing.  With this assumption, the spacecraft position vectors were calculated using basic orbital mechanics equations and used as the position of the camera.  Fig.~\ref{fig:coverage} provides a visual representation of a spacecraft in a 1000 km orbit with a 56\degree inclination.  The solid line represents the ground track of the spacecraft while the gray boxes show the area visible in the camera FOV assuming an image is taken once every 5 minutes.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.95\textwidth]{ISScoverage} %lbrt
-\caption{Coastlines visible at 56\degree inclination and 1000 km altitude when images are taken once every 5 minutes}
+\caption{Coastlines visible from a spacecraft in a 56\degree inclination and 1000 km circular orbit with images taken once every 5 minutes}
 \label{fig:coverage}
 \end{figure}
 %
-
-\begin{figure}[t!]
-\centering
-\begin{subfigure}{.49\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{Michigan_sat}
-  \caption{Satellite image with overlay of coastlines from MATLAB database}
-  \label{fig:satellite}
-\end{subfigure}%
-\begin{subfigure}{.49\textwidth} 
-  \centering
-  \includegraphics[width=0.9\linewidth]{Michigan}
-  \caption{MATLAB coastline model with identified coastline points (o) and spacecraft position (*)}
-  \label{fig:coastline}
-\end{subfigure}
-\caption{MATLAB simulated satellite view and identified coastline points within spacecraft FOV}
-\label{fig:matlabstuff}
-\end{figure}
-%
-
-A ground projected field-of-view (GFOV) was calculated based on the geometry of the satellite position and desired field-of-view (FOV) of the camera,
+The ground projected field-of-view (GFOV) can be calculated based on the geometry of the spacecraft position and desired field-of-view (FOV) of the camera,
 %
 \begin{equation}
 GFOV=2h\tan\left(\frac{FOV}{2}\right)
 \label{eq:GFOV}
 \end{equation}
 %
-where $h$ is the spacecraft altitude.  A $30\degree$ FOV was chosen resulting in a viewable footprint of approximately 536 km as seen in Fig. \ref{fig:satellite}.
+where $h$ is the spacecraft altitude.  A $30\degree$ FOV was chosen resulting in a viewable footprint of approximately 536 km.  A visual representation of the relative size of this footprint as seen by a camera can be seen in Fig.~\ref{fig:satellite} which shows a portion of the Great Lakes.
+%
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\textwidth]{Michigan_sat}
+  \caption{Simulated satellite image incorporating a camera with a 30\degree FOV in a 1000 km circular polar orbit.  The blue lines represent the coastline data provided by MATLAB.}
+  \label{fig:satellite}
+\end{subfigure}\hfill
+\begin{subfigure}{.48\textwidth} 
+  \centering
+  \includegraphics[width=0.9\textwidth]{Michigan}
+  \caption{View of MATLAB coastlines showing exact footprint with various identified coastline points (*) within the spacecraft FOV}
+  \label{fig:coastline}
+\end{subfigure}
+%\caption{View of MATLAB coastlines showing exact footprint with various identified coastline points (*) within the spacecraft FOV}
+\label{fig:matlabstuff}
+\end{figure}
+%
 %
 %\begin{figure}[t!]
 %\centering
@@ -252,7 +256,7 @@ Since both $\dot{\textbf{x}}$ and $\dot{\textbf{P}}$ are now known, each can be 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Measurement Model for Coastline Points in Images} \label{ref:MeasModel}
-Images produce line-of-sight (LOS) measurements.  These measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft as shown in Fig. \ref{fig:LOSgeometry}.  From this figure, it is clear that the following geometric relations are obtained by
+Line-of-sight (LOS) measurements are produced by the images obtained from the spacecraft's camera.  However, these measurements produce a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft as shown in Fig. \ref{fig:LOSgeometry}.  From this figure, it is clear that the following geometric relations are obtained by
 %
 \begin{figure}[ht!]
 \centering
@@ -269,37 +273,35 @@ Images produce line-of-sight (LOS) measurements.  These measurements are a nonli
 \textbf{e}_{iI}=\frac{\textbf{s}_i}{\|\textbf{s}_i\|}
 \end{equation}
 %
-where $\textbf{r}_{sc}$ is the position of the spacecraft from the center of the earth, $\textbf{s}_i$ is the vector from the spacecraft to the $i^{th}$ point, or landmark, and $\textbf{o}_i$ is the vector from the center of the earth to the landmark.  This leads to a measurement model for a single observed coastline point
+where $\textbf{r}_{sc}$ is the position of the spacecraft from the center of the earth, $\textbf{s}_i$ is the vector from the spacecraft to the $i^{th}$ observed point, or landmark, and $\textbf{o}_i$ is the vector from the center of the earth to the landmark.  The measurement model for a single observed coastline point can then be described as
 %
 \begin{equation} \label{eq:littleh}
-\textbf{h}(\textbf{x})=\textbf{e}_{iC}=\textbf{T}_{C}^I\textbf{e}_{iI}=\textbf{T}_{C}^I\frac{(\textbf{o}_{i}-\textbf{r}_{sc})}{[(\textbf{o}_{i}-\textbf{r}_{sc})^T(\textbf{o}_{i}-\textbf{r}_{sc})]^{1/2}}
+\textbf{h}(\textbf{x})=\textbf{e}_{iC}=\textbf{T}_{C}^I\textbf{e}_{iI}=\textbf{T}_{C}^I\frac{\textbf{s}_i}{[\textbf{s}_i^T\textbf{s}_i]^{1/2}}
 \end{equation}
 %
 where $\textbf{T}_C^I$ is the rotation matrix from the inertial frame to the camera frame.  From here, the measurement sensitivity matrix may be computed as
 %
 \begin{equation}
 \label{eq:H}
-\textbf{H}_{i}=\textbf{T}_{C}^I\frac{1}{\|\textbf{o}_i-\textbf{r}_{sc}\|}
+\textbf{H}_{i}=\textbf{T}_{C}^I\frac{1}{\|\textbf{s}_i\|}
 \left[\begin{matrix}
 \{\textbf{e}_{iI}\textbf{e}_{iI}^T-\textbf{I}_{3\times3}\} & \textbf{0}_{3\times3}
 \end{matrix}\right]
 \end{equation}
 %
-
-In order to update the state measurement, the measurement covariance, $\textbf{R}_i$, needs to be determined to calculate the Kalman Gain, as seen in Eq. \ref{eq:K}.  This can be determined to first order using the QUEST covariance matrix, as is common practice with unit vector measurements \cite{Shuster:1981},
+It should be noted that in order to calculate the Kalman gain, as seen in Eq.~\ref{eq:K}, the quantity $\textbf{H}_i\textbf{P}\textbf{H}_i^T+\textbf{R}_i$ must be invertible.  In this particular case, the null space of the measurement covariance, $\textbf{R}_{i}$ is the same as the null space of $\textbf{H}_i\textbf{P}\textbf{H}_i^T$ assuming $\textbf{R}_i$, is determined to first order using the QUEST covariance matrix, as is common practice with unit vector measurements \cite{Shuster:1981}.
 %
 \begin{equation}\label{eq:meascovR}
 \textbf{R}_{i}=E[(\textbf{e}_{iC}-\bar{\textbf{e}}_{iC})(\textbf{e}_{iC}-\bar{\textbf{e}}_{iC})^T]\approx\sigma_\Theta^2(\textbf{I}_{3\times3}-\bar{\textbf{e}}_{iC}\bar{\textbf{e}}_{iC}^T)
 \end{equation}
-%
-
-It should be noted that in order to calculate the Kalman gain, $\textbf{H}_i\textbf{P}\textbf{H}_i^T+\textbf{R}_i$ must be invertible.  In this particular case, the null space of $\textbf{R}_{i}$ is the same as the null space of $\textbf{H}_i\textbf{P}\textbf{H}_i^T$.  This causes the matrix to be non-invertible (a $3\times3 $ matrix with rank 2).  To avoid numerical issues in calculations, the Kalman gain equation can be adjusted by adding a rank-one matrix where $\nu\textbf{e}_i\textbf{e}_i^T$ \cite{Liounis:2013}.
+%which causes the matrix to be non-invertible (a $3\times3 $ matrix with rank 2).  To avoid numerical issues in calculations, the Kalman gain equation can be adjusted by adding a rank-one matrix where $\nu\textbf{e}_i\textbf{e}_i^T$ \cite{Liounis:2013}.
 %
 \begin{equation} \label{eq:Knew}
 \textbf{K}_i=\textbf{P}^-\textbf{H}_i^T(\textbf{H}_i\textbf{P}\textbf{H}_i^T+\textbf{R}_i+\nu\textbf{e}_i\textbf{e}_i^T)^{-1}
 \end{equation}
+
 %
-In Eq. \ref{eq:K}, $\nu=0.5tr[\textbf{R}_i]$ is chosen to ensure the matrix we are inverting is well conditioned. As explained in [\citen{Liounis:2013}], this does not change the value of $\textbf{K}_i$ since it is equivalent to adding a $\textbf{0}$ to the overall equation,
+It should also be noted that in Eq. \ref{eq:K}, $\nu=0.5tr[\textbf{R}_i]$ is chosen to ensure the matrix we are inverting is well conditioned. As explained in [\citen{Liounis:2013}], this does not change the value of $\textbf{K}_i$ since it is equivalent to adding a $\textbf{0}$ to the overall equation,
 %
 \begin{equation} \label{eq:Htranse}
 \textbf{H}_i^T\textbf{e}_i=0
@@ -309,7 +311,7 @@ In Eq. \ref{eq:K}, $\nu=0.5tr[\textbf{R}_i]$ is chosen to ensure the matrix we a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Results}
-For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1000km circular orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0 radians.  As a result, Fig. \ref{fig:contourplot} was produced to show the results based on varying inclinations as well as varying camera FOVs.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters specific to a satellite's orbit. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  In this case, images are to be taken once every five minutes for a total of twelve hours.  
+For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1000 km circular orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0 radians.  Fig.~\ref{fig:contourplot} shows the results of the simulations given various inclinations camera FOV.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters specific to a satellite's orbit. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  In this case, images are to be taken once every 30 seconds for a total of 24 hours.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.75\textwidth]{contourplot} %lbrt
@@ -319,41 +321,41 @@ For this simulation, it is important to ensure that coastlines will be visible b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Assessment of Navigation Filter Performance}
-This section discusses the results obtained from simulated data at a 1000 km altitude circular orbit.  Results from the Extended Kalman Filter were analyzed for three different inclinations of 0\degree (equatorial orbit), 45\degree, and 90\degree (polar orbit).  All simulations were done with a FOV of 30\degree.
-
+Monte Carlo analyses were run for three different inclinations: 0\degree, 45\degree, and 90\degree.  As seen in Fig.~\ref{fig:mcpos0}, the error between the predicted and true values all lie within the 3$\sigma$ bounds of the covariance, meaning the position of the spacecraft can be estimated to within a few meters of the true position while the velocity can be estimated to within a few millimeters of the true velocity.  
 \begin{figure}[ht!]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_pos90}
-  \caption{Position Error at i=90\degree}
-  \label{fig:mcpos}
+  \includegraphics[width=0.9\linewidth]{MC_pos0}
+  \caption{Position Error [m] at i=0\degree}
+  \label{fig:mcpos0}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth} 
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_vel90}
-  \caption{Velocity Error at i=90\degree}
+  \includegraphics[width=0.9\linewidth]{MC_vel0}
+  \caption{Velocity Error [mm/s] at i=0\degree}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1000km polar orbit}
-\label{fig:mcvel}
+\caption{Monte Carlo Position and Velocity Errors at 1000 km polar orbit}
+\label{fig:mcvel0}
 \end{figure}
 %
+Comparing Fig.~\ref{fig:mcpos0} through Fig.~\ref{fig:mcvel90}, it is apparent where measurements are not present, i.e. where the camera cannot detect coastlines.  In all orbits, measurements appear to be available when images are taken every 30 seconds, hence the constant convergence of the covariance towards steady state.  
 \begin{figure}[ht!]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{MC_pos45}
-  \caption{Position Error at i=90\degree}
+  \caption{Position Error [m] at i=45\degree}
   \label{fig:mcpos45}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth} 
   \centering
   \includegraphics[width=0.9\linewidth]{MC_vel45}
-  \caption{Velocity Error at i=90\degree}
+  \caption{Velocity Error [mm/s] at i=45\degree}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1000km 45 \degree orbit}
+\caption{Monte Carlo Position and Velocity Errors at 1000 km 45 \degree orbit}
 \label{fig:mcvel45}
 \end{figure}
 %
@@ -361,20 +363,23 @@ This section discusses the results obtained from simulated data at a 1000 km alt
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_pos0}
-  \caption{Position Error at i=90\degree}
-  \label{fig:mcpos0}
+  \includegraphics[width=0.9\linewidth]{MC_pos90}
+  \caption{Position Error [m] at i=90\degree}
+  \label{fig:mcpos90}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth} 
   \centering
-  \includegraphics[width=0.9\linewidth]{MC_vel0}
-  \caption{Velocity Error at i=90\degree}
+  \includegraphics[width=0.9\linewidth]{MC_vel90}
+  \caption{Velocity Error [mm/s] at i=90\degree}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1000km 0 \degree orbit}
-\label{fig:mcvel0}
+\caption{Monte Carlo Position and Velocity Errors at 1000 km 90 \degree orbit}
+\label{fig:mcvel90}
 \end{figure}
-
+%
+\section{Conclusion}
+An Extended Kalman Filter was used to determine the accuracy in which a spacecraft's position and velocity can be determined through LOS vectors produced through coastline determination.  If a coastline is visible, an image processing algorithm is able to match it with a database that can calculate spacecraft position coordinates for each observed landmark.  These coordinates are input into the filter to determine the spacecraft's position and velocity within a maximum of 5 m and 5 mm/s, respectively.  Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images.  It is hoped that this can be implemented on-board a CubeSat launched as part of West Virginia University's proposed WATSON (WVU Advanced Technology Satellite for Optical Navigation) CubeSat mission in the near future.
+%
 \section{Acknowledgments}
 The authors thank Andrew Liounis of West Virginia University and Allison Willingham of NASA Goddard Space Flight Center for valuable feedback on this manuscript. This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
 
