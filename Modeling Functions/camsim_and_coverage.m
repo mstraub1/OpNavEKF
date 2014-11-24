@@ -44,7 +44,7 @@ GIFOV = 2*height*tan(FOV/2); % km
 FOV_new = adjustFOV(GIFOV); % adjust to Matlab's scale [deg]
 
 n = 5*60;
-for k = 1:n:length(t) %9000 = Hawaii
+for k = 33601%1:n:length(t) %9000 = Hawaii
     if k+1 > length(t)
         break
     end
@@ -59,7 +59,7 @@ for k = 1:n:length(t) %9000 = Hawaii
         campos([rsc(k,1) rsc(k,2) rsc(k,3)]);
     end
     drawnow
-%                  waitforbuttonpress
+    % waitforbuttonpress
     
     % Find FOV footprint limits in terms of lat/long
     delta_lat = GIFOV/110.54e3; % convert to m [1deg = 110.54 km]
@@ -90,18 +90,28 @@ for k = 1:n:length(t) %9000 = Hawaii
 end
 
 %% Plots
-figure
+figure(1)
 hold on
-plot(long,lat,'k','LineWidth',1)
-plot(long_calc(1,1:end), lat_calc(1,1:end),'.','MarkerSize',0.75,'Color',[0.6, 0.6, 0.6])
+plot(long,lat,'k','LineWidth',1.5)
+plot(long_calc(1,1:end), lat_calc(1,1:end),'.','MarkerSize',1,'Color',[0.5, 0.5, 0.5])
 for k = 1:n:length(longbound)
     hold on
-    plot([longbound(k,:) longbound(k,1)],[latbound(k,:) latbound(k,1)],'b','LineWidth',1.25,'Color',[0.8, 0.8, 0.8]);
+    plot([longbound(k,:) longbound(k,1)],[latbound(k,:) latbound(k,1)],'b','LineWidth',1.5,'Color',[0.8, 0.8, 0.8]);
 end
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
 
-set(findall(gcf,'type','text'),'FontSize',16)
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
+
+% 2D Plot
+figure
+hold on
+plot(long,lat,'k','LineWidth',1.5)
+plot(coast_plot(:,1),coast_plot(:,2),'r*')
+xlabel('Longitude (deg)')
+ylabel('Latitude (deg)')
+axis([min(longbound(k,:))-1 max(longbound(k,:))+1 min(latbound(k,:))-1 max(latbound(k,:))+1])
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
 
 %% Get Position Vector of "known" Landmark
 % datacursormode on
