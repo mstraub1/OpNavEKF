@@ -35,7 +35,7 @@ axis equal, axis off
 h1 = globe;
 h2 = axesm('globe','Geoid',1000*6378);
 % h3 = gridm('GLineStyle','-','Gcolor',[.8 .8 .8]);
-h4 = plotm(lat,long);
+h4 = plotm(lat,long,'Color',[1 1 1]);
 set(globe,'CData',A,'FaceColor','texturemap');
 
 % Specify Desired FOV and calculate footprint size (GIFOV)
