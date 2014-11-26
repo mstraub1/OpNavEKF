@@ -84,16 +84,16 @@ Due to the previously mentioned irregularities seen in crater detection, and bec
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Coastline Determination}
-Numerous methods of extracting coastlines from images have been studied.  Common solutions include using conventional image processing boundary detection methods or classifying illumination levels of an image.  When using boundary or edge detection, various methods are available and produce similar results depending on the situation.  One popular choice for edge detection is the Canny edge detector \cite{Canny:1986}.  Previous work by Liu and Jezek \cite{Liu:2004}, however, has shown Canny edge detection to be insufficient for coastline extraction due to the lack of consistent intensity contrast between land and water regions often resulting in discontinuous coastline data.  To alleviate this problem, image segmentation and post-segmentation processing were used in [\citen{Liu:2004}].  Other authors, such as those in [\citen{Heene:2000}], use two additional masking steps in addition to the Canny edge detection: an additional edge focusing step and a closing step used as an input for the object-oriented matching process.  These additional steps greatly helped automate the extraction of coastlines from the images used.
+Numerous methods of extracting coastlines from images have been studied.  Common solutions include using conventional image processing boundary detection methods or classifying illumination levels of an image.  When using boundary or edge detection, various methods are available and produce similar results depending on the situation.  One popular choice for edge detection is the Canny edge detector \cite{Canny:1986}.  Previous work by Liu and Jezek \cite{Liu:2004}, however, has shown Canny edge detection to be insufficient for coastline extraction due to the lack of consistent intensity contrast between land and water regions, often resulting in discontinuous coastline data.  To alleviate this problem, image segmentation and post-segmentation processing were used in [\citen{Liu:2004}].  Other authors, such as those in [\citen{Heene:2000}], use two masking steps in addition to the Canny edge detection: an edge focusing step and a closing step used as an input for the object-oriented matching process.  The usage of these masking steps in [\citen{Heene:2000}] show significant improvements over Canny edge detection. 
 
-An additional problem that arises with coastline extraction and feature selection is the accuracy of determining actual coastlines.  For example, many edge detection techniques use contrast as a determining factor to differentiate boundaries and edges.  If the satellite image contains cloud coverage, it is possible for clouds to be considered boundaries and therefore identified as a possible coastline.  A solution to this problem was discussed in [\citen{Patt:1997}] using a global ocean color sensor which measures radiances in eight visible and near-infrared bands.  By creating scatter plots of radiance observed from two different bands, it was possible to normalize the data and specify thresholds to classify observed regions as land, water, clouds, or ice.  
+One other problem that arises with coastline extraction and feature selection is the potential for misidentification of non-coastline boundaries as coastlines.  For example, many edge detection techniques use contrast as a determining factor to differentiate boundaries and edges.  If the satellite image contains cloud coverage, it is possible for clouds to be considered boundaries and therefore identified as a possible coastline.  A solution to this problem is discussed in [\citen{Patt:1997}] using a global ocean color sensor which measures radiances in eight visible and near-infrared bands.  By creating scatter plots of radiance observed from two different bands, it was possible to normalize the data and specify thresholds to classify observed regions as land, water, clouds, or ice.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Georeferenced Database}
 A few options are available to provide a reference of coastlines for optical navigation.  One of the most well-known databases is provided by the National Geophysical Data Center (NGDC), part of the National Oceanic and Atmospheric Administration (NOAA).  World shorelines are provided through the Global Self-Consistent, Hierarchical, High-resolution Geography Database (GSHHG) in the form of shapefiles that store geometrical characteristics of datasets as vector coordinates, i.e. coastlines and other water/land boundaries \cite{ESRITechDes}.  These files are able to be read and written using a variety of programs.  The NGDC provides a software called GEODAS-NG that has the capability of reading the coastline data from the GSHHG or writing shapefiles from a provided input image.  
 
-It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting the data with respect to latitude and longitude coordinates.  To simulate this concept, MATLAB was used to construct a model of the Earth as viewed by a satellite in a 1,000 km orbit.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing.  With this assumption, the spacecraft orbit was propagated using twp-body orbital mechanics \cite{UnderstandingSpace}.  Fig.~\ref{fig:coverage} provides a visual representation of a spacecraft in a 1,000 km orbit with a 56\degree inclination.  The solid line represents the ground track of the spacecraft while the gray boxes show the area visible in the camera FOV assuming an image is taken once every 5 minutes.
+It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting low resolution GSHHG data with respect to latitude and longitude coordinates.  Using this data, MATLAB was used to construct a model of the Earth to simulate the view of Earth of a satellite in LEO.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing.  With this assumption, the spacecraft orbit was propagated using two-body orbital mechanics \cite{UnderstandingSpace}.  Fig.~\ref{fig:coverage} provides a visual representation of a spacecraft in a 1,000 km orbit with a 56\degree inclination.  The solid line represents the ground track of the spacecraft while the gray boxes show the area visible in the camera FOV assuming an image is taken once every 5 minutes.
 
 \begin{figure}[ht!]
 \centering
@@ -148,14 +148,14 @@ In order to create an algorithm for optical navigation, it is necessary to under
 \subsection{Extended Kalman Filter}
 Due to the nonlinear nature of spacecraft dynamics and optical measurements, an Extended Kalman Filter (EKF) will be used to estimate the state of the system \cite{Gelb,KalmanFiltering}.  The key equations are now briefly reviewed.
 
-Suppose we have a nonlinear system governed by 
+Suppose we have a nonlinear system model for state $\dot{\textbf{x}}$ governed by 
 %
 \begin{equation}
 \label{eq:F}
 \dot{\textbf{x}}=\textbf{f}(\textbf{x},t)+\textbf{v}
 \end{equation}
 %
-where \textbf{v} is zero mean white noise.  The covariance of such a system may be propagated by 
+where \textbf{v} is zero mean white noise.  The covariance matrix, $\textbf{P}$, of such a system may be propagated by 
 %
 \begin{equation}
 \label{eq:Pdot}
@@ -169,7 +169,7 @@ where
 \textbf{F}(t)=\frac{\partial{\textbf{f}(\textbf{x},t)}}{\partial{\textbf{x}}}\Big{|}_{\textbf{x}=\hat{\textbf{x}}}
 \end{equation}
 %
-Further suppose that at some time, $t_{k}$, a new measurement becomes available that is described by 
+and $\textbf{Q}$ is the process noise.  Further suppose that at some time, $t_{k}$, a new measurement becomes available that is described by 
 %
 \begin{equation}
 \label{eq:ymeas}
@@ -257,7 +257,7 @@ Since both $\dot{\textbf{x}}$ and $\dot{\textbf{P}}$ are now known, each can be 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Measurement Model for Coastline Points in Images} \label{ref:MeasModel}
-Line-of-sight (LOS) measurements are produced by the images obtained from the spacecraft's camera.  However, these measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft (Fig. \ref{fig:LOSgeometry}).  From Fig. \ref{fig:LOSgeometry}, it is clear that the following geometric relations are obtained by
+Line-of-sight (LOS) measurements are produced from the images obtained by the spacecraft's camera.  These measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft.  From Fig.~\ref{fig:LOSgeometry}, it is clear that the following geometric relations are obtained by
 %
 \begin{figure}[ht!]
 \centering
@@ -290,7 +290,7 @@ where $\textbf{T}_C^I$ is the rotation matrix from the inertial frame to the cam
 \end{matrix}\right]
 \end{equation}
 %
-Additionally, the covariance for a unit vector (LOS) measurement is given by \cite{Shuster:1981}.
+Additionally, the covariance for a unit vector (LOS) measurement is given by [\citen{Shuster:1981}] as
 \begin{equation}\label{eq:meascovR}
 	\textbf{R}_{i}=E[(\textbf{e}_{iC}-\bar{\textbf{e}}_{iC})(\textbf{e}_{iC}-\bar{\textbf{e}}_{iC})^T]\approx\sigma_\Theta^2(\textbf{I}_{3\times3}-\bar{\textbf{e}}_{iC}\bar{\textbf{e}}_{iC}^T)
 \end{equation}
@@ -311,7 +311,7 @@ As explained in [\citen{Liounis:2013}], this does not change the value of $\text
 
 \section{Simulation Results}
 \subsection{Coastline Visibility}
-For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1,000 km orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0 degrees.  Fig.~\ref{fig:contourplot} shows the results of the simulations given various orbital inclinations and camera FOV.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters, especially attitude. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  For these results, images are captured once every 30 seconds for a total of 24 hours.
+For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1,000 km orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree.  Fig.~\ref{fig:contourplot} shows the results of the simulations given various orbital inclinations and camera FOV.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters, especially attitude. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  For these results, images are captured once every 30 seconds for a total of 24 hours.
 \begin{figure}[h!]
 \centering
 \resizebox{1.0\textwidth}{!}{\includegraphics[width=0.9\textwidth,scale=1.5]{contourplot}} %lbrt
@@ -323,7 +323,7 @@ For this simulation, it is important to ensure that coastlines will be visible b
 \subsection{Assessment of Navigation Filter Performance}
 A Monte Carlo analysis was run to asses the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  
 
-This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0 degrees for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance. 
+This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance. 
 
 Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, measurements appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecraft in a polar orbit produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
 
@@ -374,7 +374,7 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
   \caption{Velocity Error [mm/s] at i=45\degree}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1,000 km 45 \degree orbit}
+\caption{Monte Carlo Position and Velocity Errors at 1,000 km 45\degree orbit}
 \label{fig:mcvel45}
 \end{figure}
 %
@@ -411,7 +411,7 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 		\caption{Velocity Error [mm/s] at i=45\degree}
 		\label{fig:mcvel45_500}
 	\end{subfigure}
-	\caption{Monte Carlo Position and Velocity Errors at 500 km 45 \degree orbit}
+	\caption{Monte Carlo Position and Velocity Errors at 500 km 45\degree orbit}
 	\label{fig:mc45_500}
 \end{figure}
 %
