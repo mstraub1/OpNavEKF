@@ -43,7 +43,7 @@
 \maketitle
 
 \begin{abstract}
-In order to meet the demands of future space missions, it is beneficial for spacecraft to have the capability to support autonomous navigation. This is true for both crewed and uncrewed vehicles. For crewed vehicles, autonomous navigation would allow the crew to safely navigate home in the event of a communication system failure. For uncrewed missions, autonomous navigation reduces the demand on ground-based infrastructure and could allow for more flexible operation. One promising technique for achieving these goals is through optical navigation. To this end, the present work considers how camera images of the Earth's surface could enable autonomous navigation of a satellite in low Earth orbit. Specifically, this study will investigate the use of coastlines and other natural land-water boundaries for navigation. Observed coastlines can be matched to a pre-existing coastline database in order to determine the location of the spacecraft. This paper examines how such measurements may be processed in an on-board Extended Kalman Filter (EKF) to provide completely autonomous estimates of the spacecraft state throughout the duration of the mission.
+In order to meet the demands of future space missions, it is beneficial for spacecraft to have the capability to support autonomous navigation. This is true for both crewed and uncrewed vehicles. For crewed vehicles, autonomous navigation would allow the crew to safely navigate home in the event of a communication system failure. For uncrewed missions, autonomous navigation reduces the demand on ground-based infrastructure and could allow for more flexible operation. One promising technique for achieving these goals is through optical navigation. To this end, the present work considers how camera images of the Earth's surface could enable autonomous navigation of a satellite in low Earth orbit. Specifically, this study will investigate the use of coastlines and other natural land-water boundaries for navigation. Observed coastlines can be matched to a pre-existing coastline database in order to determine the location of the spacecraft. This paper examines how such measurements may be processed in an on-board extended Kalman filter (EKF) to provide completely autonomous estimates of the spacecraft state throughout the duration of the mission.
 \end{abstract}
 
 \section*{Nomenclature}
@@ -70,9 +70,9 @@ In order to meet the demands of future space missions, it is beneficial for spac
 \section{Introduction}
 With the many recent technological developments in the aerospace industry and the desire to conduct more ambitious space missions, there is an increasing need for fully autonomous spacecraft.  Autonomous spacecraft navigation systems are important for both crewed and uncrewed missions.  In the case of crewed missions, autonomous navigation systems are crucial in bringing the crew home safely in case of a communication system failure.  For robotic missions, autonomous navigation reduces demands on ground-based infrastructure and increases mission flexibility when far away from the Earth.  For either scenario, previous work has shown optical navigation (OPNAV) to be one method of fulfilling the need for autonomous navigation \cite{Christian:2012}.
 
-The process of OPNAV includes capturing an image of a known object and using the information in this image to determine the location of the spacecraft.  Target bodies for optical navigation include planets, moons, asteroids, comets, and stars \cite{Owen:2011}.  At long ranges, it is common to use horizon-based OPNAV techniques.  At closer ranges, surface features may be observed.  On Earth, there are a number of different naturally occurring features that could be used for navigation.  Of special interest here are coastlines, islands, and other in-land water boundaries such as lakes and rivers \cite{Liu:2004}.  Thus, the focus of this paper will be on autonomous optical navigation of a satellite in low-Earth orbit (LEO) using coastlines as landmarks.  
+The process of OPNAV includes capturing an image of a known object and using the information in this image to determine the location of the spacecraft.  Target bodies for optical navigation include planets, moons, asteroids, comets, and stars \cite{Owen:2011}.  At long ranges, it is common to use horizon-based OPNAV techniques.  At closer ranges, surface features may be observed.  On Earth, there are a number of different naturally occurring features that could be used for navigation.  Of special interest here are coastlines, islands, and other inland water boundaries such as lakes and rivers \cite{Liu:2004}.  Thus, the focus of this paper will be on autonomous optical navigation of a satellite in low-Earth orbit (LEO) using coastlines as landmarks.  
 
-For this study, it is assumed that the only source of external measurements will be from a star-tracker (for attitude) and from an Earth-observing camera.  The state of the spacecraft will be propagated on-board using assumed dynamics and Inertial Measurement Unit (IMU) data.  In addition, a camera measurement model will be developed to utilize measurements obtained from landmark observations to be processed in an on-board Extended Kalman Filter (EKF).  These models will be discussed in detail later in the paper.
+For this study, it is assumed that the only source of external measurements will be from a star-tracker (for attitude) and from an Earth-observing camera.  The state of the spacecraft will be propagated on-board using assumed dynamics and Inertial Measurement Unit (IMU) data.  In addition, a camera measurement model will be developed to utilize measurements obtained from landmark observations to be processed in an on-board extended Kalman filter (EKF).  These models will be discussed in detail later in the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -105,7 +105,7 @@ It is also possible to use MATLAB as a georeferenced database in conjunction wit
 The ground projected field-of-view (GFOV) can be calculated based on the geometry of the spacecraft position and desired field-of-view (FOV) of the camera,
 %
 \begin{equation}
-GFOV=2h\tan\left(\frac{FOV}{2}\right)
+\textrm{GFOV}=2h\tan\left(\frac{\textrm{FOV}}{2}\right)
 \label{eq:GFOV}
 \end{equation}
 %
@@ -116,13 +116,13 @@ where $h$ is the spacecraft altitude.  A $30\degree$ FOV was chosen resulting in
 \begin{subfigure}{.48\textwidth}
   \centering
   \includegraphics[width=0.9\textwidth]{Michigan_sat}
-  \caption{Simulated satellite image incorporating a camera with a 30\degree FOV in a 1,000 km circular polar orbit.  The blue lines represent the coastline data provided by MATLAB.}
+  \caption{Simulated satellite image incorporating a camera with a 30\degree FOV in a 1,000 km circular polar orbit.  The blue lines represent the coastline data.}
   \label{fig:satellite}
 \end{subfigure}\hfill
 \begin{subfigure}{.48\textwidth} 
   \centering
   \includegraphics[width=0.9\textwidth]{Michigan}
-  \caption{View of MATLAB coastlines showing exact footprint with various identified coastline points (*) within the spacecraft FOV}
+  \caption{View of coastlines showing exact footprint with various identified coastline points (*) within the spacecraft FOV.}
   \label{fig:coastline}
 \end{subfigure}
 \caption{Simulated view of coastlines and the corresponding footprint based on a 1,000 km circular polar orbit.}
@@ -146,7 +146,7 @@ In order to create an algorithm for optical navigation, it is necessary to under
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Extended Kalman Filter}
-Due to the nonlinear nature of spacecraft dynamics and optical measurements, an Extended Kalman Filter (EKF) will be used to estimate the state of the system \cite{Gelb,KalmanFiltering}.  The key equations are now briefly reviewed.
+Due to the nonlinear nature of spacecraft dynamics and optical measurements, an extended Kalman filter (EKF) will be used to estimate the state of the system \cite{Gelb,KalmanFiltering}.  The key equations are now briefly reviewed.
 
 Suppose we have a nonlinear system model for state $\dot{\textbf{x}}$ governed by 
 %
@@ -258,14 +258,12 @@ Since both $\dot{\textbf{x}}$ and $\dot{\textbf{P}}$ are now known, each can be 
 
 \subsection{Measurement Model for Coastline Points in Images} \label{ref:MeasModel}
 Line-of-sight (LOS) measurements are produced from the images obtained by the spacecraft's camera.  These measurements are a nonlinear function of the spacecraft state and may be determined by the geometry between the Earth and the spacecraft.  From Fig.~\ref{fig:LOSgeometry}, it is clear that the following geometric relations are obtained by
-%
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.75\textwidth,trim=0.8in 1.5in 0.3in 1in,clip]{LOSgeometry} %lbrt
-\caption{Line-of-sight vectors for measurement model}
-\label{fig:LOSgeometry}
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.75\textwidth,trim=0.8in 1.5in 0.3in 1in,clip]{LOSgeometry} %lbrt
+	\caption{Line-of-sight vectors for measurement model.}
+	\label{fig:LOSgeometry}
 \end{figure}
-%
 \begin{equation} \label{eq:s}
 \textbf{s}_i=\textbf{o}_i-\textbf{r}_{sc}
 \end{equation}
@@ -325,20 +323,20 @@ A Monte Carlo analysis was run to asses the performance of the EKF using only co
 
 This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance. 
 
-Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, measurements appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecraft in a polar orbit produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
+Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it is apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, coastlines appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
 
 \begin{table}[h]
 	\centering
-	\caption{Summary of position and velocity errors for specified orbits}
+	\caption{Summary of position and velocity errors for specified orbits.}
 	\label{summary}
 	\begin{tabular}{c c >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm}}
 		\hhline{========}
-		Inclination & Altitude & Along-track Steady State Position Error & Cross-track Steady State Position Error & Radial Steady State Position Error & Along-track Steady State Velocity Error & Cross-track Steady State Velocity Error & Radial Steady State Velocity Error \\ \hline
-		0\degree & 1,000 km & 1.0 km & 1.4 km & 5.0 km & 5.0 m/s & 1.4 m/s & 1.0 m/s \\
-		45\degree & 1,000 km & 1.0 km & 1.4 km & 5.0 km & 5.0 m/s & 1.4 m/s & 1.0 m/s \\
-		90\degree & 1,000 km & 0.6 km & 1.3 km & 3.0 km & 3.0 m/s & 1.3 m/s & 0.6 m/s \\
-		45\degree & 500 km & 1.0 km & 1.4 km & 4.5 km & 4.8 m/s & 1.5 m/s & 1.1 m/s \\
-		90\degree & 500 km & 0.5 km & 1.3 km & 1.8 km & 2.0 m/s & 1.4 m/s & 0.6 m/s \\ \hhline{========}
+		Inclination & Altitude [km] & Along-track Steady State Position Error [km] & Cross-track Steady State Position Error [km] & Radial Steady State Position Error [km] & Along-track Steady State Velocity Error [m/s] & Cross-track Steady State Velocity Error [m/s] & Radial Steady State Velocity Error [m/s]\\ \hline
+		0\degree & 1,000 & 1.0 & 1.4 & 5.0 & 5.0 & 1.4 & 1.0 \\
+		45\degree & 1,000 & 1.0 & 1.4 & 5.0 & 5.0 & 1.4 & 1.0 \\
+		90\degree & 1,000 & 0.6 & 1.3 & 3.0 & 3.0 & 1.3 & 0.6 \\
+		45\degree & 500 & 1.0 & 1.4 & 4.5 & 4.8 & 1.5 & 1.1 \\
+		90\degree & 500 & 0.5 & 1.3 & 1.8 & 2.0 & 1.4 & 0.6 \\ \hhline{========}
 	\end{tabular}
 \end{table}
 %
@@ -347,16 +345,16 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 \begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics{MC_pos0}
-  \caption{Position Error [m] at i=0\degree}
+  \caption{Position error [m] at i=0\degree.}
   \label{fig:mcpos0}
 \end{subfigure}
 \begin{subfigure}{.49\textwidth} 
   \centering
   \includegraphics{MC_vel0}
-  \caption{Velocity Error [mm/s] at i=0\degree}
+  \caption{Velocity error [mm/s] at i=0\degree.}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1,000 km equatorial (0\degree) orbit}
+\caption{Monte Carlo position and velocity errors at 1,000 km equatorial (0\degree) orbit.}
 \label{fig:mcvel0}
 \end{figure}
 %
@@ -365,16 +363,16 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 \begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics{MC_pos45}
-  \caption{Position Error [m] at i=45\degree}
+  \caption{Position error [m] at i=45\degree.}
   \label{fig:mcpos45}
 \end{subfigure}%
 \begin{subfigure}{.49\textwidth} 
   \centering
   \includegraphics{MC_vel45}
-  \caption{Velocity Error [mm/s] at i=45\degree}
+  \caption{Velocity error [mm/s] at i=45\degree.}
   \label{fig:coastline}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1,000 km 45\degree orbit}
+\caption{Monte Carlo position and velocity rrrors at 1,000 km 45\degree orbit.}
 \label{fig:mcvel45}
 \end{figure}
 %
@@ -383,16 +381,16 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 \begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics{MC_pos90}
-  \caption{Position Error [m] at i=90\degree}
+  \caption{Position rrror [m] at i=90\degree.}
   \label{fig:mcpos90}
 \end{subfigure}%
 \begin{subfigure}{.49\textwidth} 
   \centering
   \includegraphics{MC_vel90}
-  \caption{Velocity Error [mm/s] at i=90\degree}
+  \caption{Velocity error [mm/s] at i=90\degree.}
   \label{fig:mcvel90}
 \end{subfigure}
-\caption{Monte Carlo Position and Velocity Errors at 1,000 km polar (90\degree) orbit}
+\caption{Monte Carlo position and velocity errors at 1,000 km polar (90\degree) orbit.}
 \label{fig:mc90}
 \end{figure}
 %
@@ -402,16 +400,16 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos45_500}
-		\caption{Position Error [m] at i=45\degree}
+		\caption{Position error [m] at i=45\degree.}
 		\label{fig:mcpos45_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel45_500}
-		\caption{Velocity Error [mm/s] at i=45\degree}
+		\caption{Velocity error [mm/s] at i=45\degree.}
 		\label{fig:mcvel45_500}
 	\end{subfigure}
-	\caption{Monte Carlo Position and Velocity Errors at 500 km 45\degree orbit}
+	\caption{Monte Carlo position and velocity errors at 500 km 45\degree orbit.}
 	\label{fig:mc45_500}
 \end{figure}
 %
@@ -421,21 +419,21 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it should be app
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos90_500}
-		\caption{Position Error [m] at i=90\degree}
+		\caption{Position error [m] at i=90\degree.}
 		\label{fig:mcposl90_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel90_500}
-		\caption{Velocity Error [mm/s] at i=90\degree}
+		\caption{Velocity error [mm/s] at i=90\degree.}
 		\label{fig:mcvel90_500}
 	\end{subfigure}
-	\caption{Monte Carlo Position and Velocity Errors at 500 km polar (90\degree) orbit}
+	\caption{Monte Carlo position and velocity errors at 500 km polar (90\degree) orbit.}
 	\label{fig:mc90_500}
 \end{figure}
 %
 \section{Conclusion}
-An Extended Kalman Filter was used to autonomously determine the accuracy in which a spacecraft's position and velocity could be estimated through camera observations of coastlines on Earth's surface.  If a coastline is visible, an image processing algorithm is able to match it with a database of known coastline locations.  These coordinates are input into the filter to determine the spacecraft's position and velocity steady state error.  The results in Table~\ref{summary} show that based on these simulations, spacecraft in polar orbits are likely to have smaller steady state errors in both position and velocity measurements.  Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images.  It is hoped that this can be implemented on-board a CubeSat launched as part of West Virginia University's proposed WATSON (WVU Advanced Technology Satellite for Optical Navigation) CubeSat mission in the near future.
+An extended Kalman filter was used to autonomously determine the accuracy in which a spacecraft's position and velocity could be estimated through camera observations of coastlines on Earth's surface.  If a coastline is visible, an image processing algorithm is able to match it with a database of known coastline locations.  These coordinates are input into the filter to determine the spacecraft's position and velocity steady state error.  The results in Table~\ref{summary} show that based on these simulations, spacecraft in polar orbits are likely to have smaller steady state errors in both position and velocity measurements.  Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images.  It is hoped that this can be implemented on-board a CubeSat launched as part of West Virginia University's proposed WATSON (WVU Advanced Technology Satellite for Optical Navigation) mission in the near future.
 %
 \clearpage
 \section{Acknowledgments}
