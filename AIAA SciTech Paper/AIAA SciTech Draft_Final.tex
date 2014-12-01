@@ -93,12 +93,12 @@ One other problem that arises with coastline extraction and feature selection is
 \subsection{Georeferenced Database}
 A few options are available to provide a reference of coastlines for optical navigation.  One of the most well-known databases is provided by the National Geophysical Data Center (NGDC), part of the National Oceanic and Atmospheric Administration (NOAA).  World shorelines are provided through the Global Self-Consistent, Hierarchical, High-resolution Geography Database (GSHHG) in the form of shapefiles that store geometrical characteristics of datasets as vector coordinates, i.e. coastlines and other water/land boundaries \cite{ESRITechDes}.  These files are able to be read and written using a variety of programs.  The NGDC provides a software called GEODAS-NG that has the capability of reading the coastline data from the GSHHG or writing shapefiles from a provided input image.  
 
-It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting low resolution GSHHG data with respect to latitude and longitude coordinates.  Using this data, MATLAB was used to construct a model of the Earth to simulate the view of Earth of a satellite in LEO.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing, with a small amount of random noise added to prevent singularities.  With this assumption, the spacecraft orbit was propagated using two-body orbital mechanics \cite{UnderstandingSpace}.  Fig.~\ref{fig:coverage} provides a visual representation of a spacecraft in a 1,000 km orbit with a 56\degree inclination.  The solid line represents the ground track of the spacecraft while the gray boxes show the area visible in the camera FOV assuming an image is taken once every 5 minutes.
+It is also possible to use MATLAB as a georeferenced database in conjunction with the GSHHG database.  MATLAB is capable of plotting low resolution GSHHG data with respect to latitude and longitude coordinates.  Using this data, MATLAB was used to construct a model of the Earth to simulate the coastlines that would be observed from a satellite in LEO.  The footprint simulation was modeled under the assumption that the on-board camera is always nadir-pointing, with a small amount of random noise added to prevent singularities.  With this assumption, the spacecraft orbit was propagated using two-body orbital mechanics \cite{UnderstandingSpace}.  Figure \ref{fig:coverage} provides a visual representation of a spacecraft in a 1,000 km orbit with a $56\degree$ inclination.  The solid line represents the ground track of the spacecraft while the gray boxes show the area visible in the camera FOV assuming an image is taken once every 5 minutes.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.95\textwidth]{ISScoverage} %lbrt
-\caption{Camera footprints (gray boxes) from a spacecraft in a 56\degree inclination, 1,000 km circular orbit with images taken once every 5 minutes.  The camera has a FOV of 30\degree.}
+\caption{Camera footprints (gray boxes) from a spacecraft in a $56\degree$ inclination, 1,000 km circular orbit with images taken once every 5 minutes.  The camera has a FOV of $30\degree$.}
 \label{fig:coverage}
 \end{figure}
 %
@@ -116,7 +116,7 @@ where $h$ is the spacecraft altitude.  A $30\degree$ FOV was chosen resulting in
 \begin{subfigure}{.48\textwidth}
   \centering
   \includegraphics[width=0.9\textwidth]{Michigan_sat}
-  \caption{Simulated satellite image incorporating a camera with a 30\degree FOV in a 1,000 km circular polar orbit.  The blue lines represent the coastline data.}
+  \caption{Simulated satellite image incorporating a camera with a $30\degree$ FOV in a 1,000 km circular polar orbit.  The white lines represent the coastline data.}
   \label{fig:satellite}
 \end{subfigure}\hfill
 \begin{subfigure}{.48\textwidth} 
@@ -284,36 +284,35 @@ As explained in [\citen{Liounis:2013}], this does not change the value of $\text
 \textbf{H}_i^T\textbf{e}_i=0
 \end{equation}
 %
-
+\begin{figure}[b!]
+	\centering
+	\resizebox{1.0\textwidth}{!}{\includegraphics[width=0.9\textwidth,scale=1.5]{contourplot}} %lbrt
+	\caption{Orbit-specific contour plot showing the percentage of time coastline is observable based on inclination and FOV at a 1,000 km circular orbit with images taken once every five minutes.}
+	\label{fig:contourplot}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Simulation Results}
 \subsection{Coastline Visibility}
-For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1,000 km orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree.  Fig.~\ref{fig:contourplot} shows the results of the simulations given various orbital inclinations and camera FOV.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters, especially attitude. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  For these results, images are captured once every 30 seconds for a total of 24 hours.
-\begin{figure}[h!]
-\centering
-\resizebox{1.0\textwidth}{!}{\includegraphics[width=0.9\textwidth,scale=1.5]{contourplot}} %lbrt
-\caption{Orbit-specific contour plot showing the percentage of time coastline is observable based on inclination and FOV at a 1,000 km circular orbit with images taken once every five minutes.}
-\label{fig:contourplot}
-\end{figure}
+For this simulation, it is important to ensure that coastlines will be visible based on the spacecraft's orbit and camera parameters.  Therefore, simulations were run to determine the percentage of time coastlines would be visible from the spacecraft's position in a 1,000 km orbit with varying inclinations.  For simplicity, other orbital parameters, including the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at $0\degree$.  It is important to note that altering these values will change how often coastlines are able to be detected and results may differ slightly from those shown here.  Figure \ref{fig:contourplot} shows the results of the simulations given various orbital inclinations and camera FOV.  It is important to note that these results are orbit-specific and will vary slightly due to differences in orbital parameters, especially attitude. Consequently, the rate at which images are captured also plays a key role in determining how often coastlines are observable.  For the results in Fig.~\ref{fig:contourplot}, images are captured once every 5 minutes for a total of 24 hours.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Assessment of Navigation Filter Performance}
 A Monte Carlo analysis was run to assess the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  In each analysis, the camera was assumed to have a $30\degree $ FOV.
 
-This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance.
+This simulation was carried out for a total of 1,000 runs for each of five orbits ($0\degree$, $45\degree$, and $90\degree$, each at 1,000 km altitude; and $45\degree$ and $90\degree$ at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at $0\degree$ for simplicity.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance.
 \begin{table}[h]
 	\centering
-	\caption{Summary of position and velocity errors ($1\sigma$) for specified orbits.}
+	\caption{Summary of steady state position and velocity errors ($1\sigma$) for specified orbits.} 
 	\label{summary}
 	\begin{tabular}{c c >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm}}
 		\hhline{========}
 		Inclination & Altitude [km] & Along-track Position Error [km] & Cross-track Position Error [km] & Radial Position Error [km] & Along-track Velocity Error [m/s] & Cross-track Velocity Error [m/s] & Radial Velocity Error [m/s]\\ \hline
-		0\degree & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47 & 0.33 \\
-		45\degree & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47& 0.33 \\
-		90\degree & 1,000 & 0.20 & 0.43 & 1.0 & 1.0 & 0.43 & 0.20 \\
-		45\degree & 500 & 0.33 & 0.47 & 1.5 & 1.6 & 0.5 & 0.37 \\
-		90\degree & 500 & 0.17 & 0.43 & 0.6 & 0.67 & 0.47 & 0.20 \\ \hhline{========}
+		$0\degree$ & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47 & 0.33 \\
+		$45\degree$ & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47& 0.33 \\
+		$90\degree$ & 1,000 & 0.20 & 0.43 & 1.0 & 1.0 & 0.43 & 0.20 \\
+		$45\degree$ & 500 & 0.33 & 0.47 & 1.5 & 1.6 & 0.5 & 0.37 \\
+		$90\degree$ & 500 & 0.17 & 0.43 & 0.6 & 0.67 & 0.47 & 0.20 \\ \hhline{========}
 	\end{tabular}
 \end{table}
 \begin{figure}[h!]
@@ -321,36 +320,36 @@ This simulation was carried out for a total of 1,000 runs for each of five orbit
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos0}
-		\caption{Position error [km] at i=0\degree.}
+		\caption{Position error [km] at i=$0\degree$.}
 		\label{fig:mcpos0}
 	\end{subfigure}
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel0}
-		\caption{Velocity error [m/s] at i=0\degree.}
+		\caption{Velocity error [m/s] at i=$0\degree$.}
 		\label{fig:coastline}
 	\end{subfigure}
-	\caption{Monte Carlo position and velocity errors at 1,000 km equatorial (0\degree) orbit.}
+	\caption{Monte Carlo position and velocity errors for a 1,000 km equatorial ($0\degree$ inclination) orbit.}
 	\label{fig:mcvel0}
 \end{figure}
 \clearpage
-Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
+Table~\ref{summary} provides a summary of the results from the five orbits mentioned above.  Results show that spacecraft in high-inclination orbits consistently produce the smallest steady state errors.  This is likely due to the near global coverage over time and superior measurement geometry.
 
 \begin{figure}[h!]
 	\centering
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos45}
-		\caption{Position error [km] at i=45\degree.}
+		\caption{Position error [km] at i=$45\degree$.}
 		\label{fig:mcpos45}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel45}
-		\caption{Velocity error [m/s] at i=45\degree.}
+		\caption{Velocity error [m/s] at i=$45\degree$.}
 		\label{fig:coastline}
 	\end{subfigure}
-	\caption{Monte Carlo position and velocity errors at 1,000 km 45\degree orbit.}
+	\caption{Monte Carlo position and velocity errors for a 1,000 km, $45\degree$ inclination orbit.}
 	\label{fig:mcvel45}
 \end{figure}
 \begin{figure}[h!]
@@ -358,16 +357,16 @@ Table~\ref{summary} provides a summary of the results from the three orbits ment
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos90}
-		\caption{Position error [km] at i=90\degree.}
+		\caption{Position error [km] at i=$90\degree$.}
 		\label{fig:mcpos90}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel90}
-		\caption{Velocity error [m/s] at i=90\degree.}
+		\caption{Velocity error [m/s] at i=$90\degree$.}
 		\label{fig:mcvel90}
 	\end{subfigure}
-	\caption{Monte Carlo position and velocity errors at 1,000 km polar (90\degree) orbit.}
+	\caption{Monte Carlo position and velocity errors for a 1,000 km polar ($90\degree$ inclination) orbit.}
 	\label{fig:mc90}
 \end{figure}
 \begin{figure}[h!]
@@ -375,16 +374,16 @@ Table~\ref{summary} provides a summary of the results from the three orbits ment
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos45_500}
-		\caption{Position error [km] at i=45\degree.}
+		\caption{Position error [km] at i=$45\degree$.}
 		\label{fig:mcpos45_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel45_500}
-		\caption{Velocity error [m/s] at i=45\degree.}
+		\caption{Velocity error [m/s] at i=$45\degree$.}
 		\label{fig:mcvel45_500}
 	\end{subfigure}
-	\caption{Monte Carlo position and velocity errors at 500 km 45\degree orbit.}
+	\caption{Monte Carlo position and velocity errors for a 500 km, $45\degree$ inclination orbit.}
 	\label{fig:mc45_500}
 \end{figure}
 \begin{figure}[h!]
@@ -392,16 +391,16 @@ Table~\ref{summary} provides a summary of the results from the three orbits ment
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos90_500}
-		\caption{Position error [km] at i=90\degree.}
+		\caption{Position error [km] at i=$90\degree$.}
 		\label{fig:mcposl90_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel90_500}
-		\caption{Velocity error [m/s] at i=90\degree.}
+		\caption{Velocity error [m/s] at i=$90\degree$.}
 		\label{fig:mcvel90_500}
 	\end{subfigure}
-	\caption{Monte Carlo position and velocity errors at 500 km polar (90\degree) orbit.}
+	\caption{Monte Carlo position and velocity errors for a 500 km polar ($90\degree$ inclination) orbit.}
 	\label{fig:mc90_500}
 \end{figure}
 \clearpage
@@ -409,7 +408,7 @@ Table~\ref{summary} provides a summary of the results from the three orbits ment
 An extended Kalman filter was used to demonstrate how observations of coastlines on the Earth's surface may be used to autonomously estimate the position and velocity of a spacecraft. If a coastline is visible, an image processing algorithm may be able to detect such surface features and then match it with a database of known coastline locations (although the details of such image processing were not considered in this study). These coastline coordinates are input into the filter to estimate the spacecraft's position and velocity. The results in Table 1 show that, based on these preliminary simulations, spacecraft in high-inclination orbits are likely to have smaller steady state errors in both position and velocity measurements. This is likely due to more favorable observation geometry and measurement frequency, although a more detailed study is required. Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images. It is the research team's hope that this type of approach can soon be demonstrated onboard a CubeSat, such as the WATSON (WVU Advanced Technology Satellite for Optical Navigation) mission concept being developed at West Virginia University.
 
 \section{Acknowledgments}
-The authors thank Dr. John O. Woods and Andrew Liounis of West Virginia University and Allison Willingham of NASA Goddard Space Flight Center for valuable feedback on this manuscript. This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
+The authors thank Dr.~John O.~Woods and Andrew Liounis of West Virginia University for valuable feedback on this manuscript. The authors also thank Allison Willingham of NASA Goddard Space Flight Center for her support on this project.  This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{aiaa}
