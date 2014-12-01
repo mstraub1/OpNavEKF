@@ -128,15 +128,6 @@ where $h$ is the spacecraft altitude.  A $30\degree$ FOV was chosen resulting in
 \caption{Simulated view of coastlines and the corresponding footprint based on a 1,000 km circular polar orbit.}
 \label{fig:matlabstuff}
 \end{figure}
-%
-%
-%\begin{figure}[t!]
-%\centering
-  %\includegraphics[width=.25\linewidth,trim=0in 3.8in 6.3in 0in,clip]{30FOV.pdf} %lbrt
-  %\caption{Satellite image with a $30\degree$ FOV.}
-  %\label{fig:fovimage}
-%\end{figure}
-%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -177,16 +168,6 @@ and $\textbf{Q}$ is the process noise.  Further suppose that at some time, $t_{k
 \end{equation}
 %
 where $\textbf{u}_k \sim \mathcal{N}(0,\textbf{R}_k)$ and $\textbf{h}(\textbf{x})$ is the nonlinear measurement model, described in detail in Section \ref{ref:MeasModel}.
-%\begin{equation}
-%\label{eq:xdot}
-%\dot{\textbf{x}}=\textbf{f}(\hat{\textbf{x}},t)
-%\end{equation}
-%
-%\begin{equation}
-%\label{eq:bigH}
-%\textbf{H}_i\triangleq\frac{\partial{h(\textbf{x})}}{\partial{\textbf{x}}}\Big{|}_{\textbf{x}=\hat{\textbf{x}}}
-%\end{equation}
-%
 
 Both the \textit{a posteriori} state and covariance estimates, $\hat{\textbf{x}}_k^+$ and $\textbf{P}_k^+$, may now be computed by
 %
@@ -210,7 +191,6 @@ Finally, the optimal update is achieved when $\textbf{K}_k$ is chosen to be the 
 \textbf{K}_k=\textbf{P}^-\textbf{H}_k^T(\textbf{H}_k\textbf{P}\textbf{H}_k^T+\textbf{R}_k)^{-1}
 \end{equation}
 %
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{State Propagation using an Extended Kalman Filter}
@@ -319,12 +299,9 @@ For this simulation, it is important to ensure that coastlines will be visible b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Assessment of Navigation Filter Performance}
-A Monte Carlo analysis was run to asses the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  
+A Monte Carlo analysis was run to assess the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  
 
-This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance. 
-
-Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it is apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, coastlines appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
-
+This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance.
 \begin{table}[h]
 	\centering
 	\caption{Summary of position and velocity errors for specified orbits.}
@@ -339,62 +316,60 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it is apparent w
 		90\degree & 500 & 0.5 & 1.3 & 1.8 & 2.0 & 1.4 & 0.6 \\ \hhline{========}
 	\end{tabular}
 \end{table}
-%
 \begin{figure}[h!]
-\centering
-\begin{subfigure}{.49\textwidth}
-  \centering
-  \includegraphics{MC_pos0}
-  \caption{Position error [m] at i=0\degree.}
-  \label{fig:mcpos0}
-\end{subfigure}
-\begin{subfigure}{.49\textwidth} 
-  \centering
-  \includegraphics{MC_vel0}
-  \caption{Velocity error [mm/s] at i=0\degree.}
-  \label{fig:coastline}
-\end{subfigure}
-\caption{Monte Carlo position and velocity errors at 1,000 km equatorial (0\degree) orbit.}
-\label{fig:mcvel0}
+	\centering
+	\begin{subfigure}{.49\textwidth}
+		\centering
+		\includegraphics{MC_pos0}
+		\caption{Position error [m] at i=0\degree.}
+		\label{fig:mcpos0}
+	\end{subfigure}
+	\begin{subfigure}{.49\textwidth} 
+		\centering
+		\includegraphics{MC_vel0}
+		\caption{Velocity error [mm/s] at i=0\degree.}
+		\label{fig:coastline}
+	\end{subfigure}
+	\caption{Monte Carlo position and velocity errors at 1,000 km equatorial (0\degree) orbit.}
+	\label{fig:mcvel0}
 \end{figure}
-%
+\clearpage
+Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, coastlines appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
+
 \begin{figure}[h!]
-\centering
-\begin{subfigure}{.49\textwidth}
-  \centering
-  \includegraphics{MC_pos45}
-  \caption{Position error [m] at i=45\degree.}
-  \label{fig:mcpos45}
-\end{subfigure}%
-\begin{subfigure}{.49\textwidth} 
-  \centering
-  \includegraphics{MC_vel45}
-  \caption{Velocity error [mm/s] at i=45\degree.}
-  \label{fig:coastline}
-\end{subfigure}
-\caption{Monte Carlo position and velocity rrrors at 1,000 km 45\degree orbit.}
-\label{fig:mcvel45}
+	\centering
+	\begin{subfigure}{.49\textwidth}
+		\centering
+		\includegraphics{MC_pos45}
+		\caption{Position error [m] at i=45\degree.}
+		\label{fig:mcpos45}
+	\end{subfigure}%
+	\begin{subfigure}{.49\textwidth} 
+		\centering
+		\includegraphics{MC_vel45}
+		\caption{Velocity error [mm/s] at i=45\degree.}
+		\label{fig:coastline}
+	\end{subfigure}
+	\caption{Monte Carlo position and velocity errors at 1,000 km 45\degree orbit.}
+	\label{fig:mcvel45}
 \end{figure}
-%
 \begin{figure}[h!]
-\centering
-\begin{subfigure}{.49\textwidth}
-  \centering
-  \includegraphics{MC_pos90}
-  \caption{Position rrror [m] at i=90\degree.}
-  \label{fig:mcpos90}
-\end{subfigure}%
-\begin{subfigure}{.49\textwidth} 
-  \centering
-  \includegraphics{MC_vel90}
-  \caption{Velocity error [mm/s] at i=90\degree.}
-  \label{fig:mcvel90}
-\end{subfigure}
-\caption{Monte Carlo position and velocity errors at 1,000 km polar (90\degree) orbit.}
-\label{fig:mc90}
+	\centering
+	\begin{subfigure}{.49\textwidth}
+		\centering
+		\includegraphics{MC_pos90}
+		\caption{Position rrror [m] at i=90\degree.}
+		\label{fig:mcpos90}
+	\end{subfigure}%
+	\begin{subfigure}{.49\textwidth} 
+		\centering
+		\includegraphics{MC_vel90}
+		\caption{Velocity error [mm/s] at i=90\degree.}
+		\label{fig:mcvel90}
+	\end{subfigure}
+	\caption{Monte Carlo position and velocity errors at 1,000 km polar (90\degree) orbit.}
+	\label{fig:mc90}
 \end{figure}
-%
-%
 \begin{figure}[h!]
 	\centering
 	\begin{subfigure}{.49\textwidth}
@@ -412,8 +387,6 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it is apparent w
 	\caption{Monte Carlo position and velocity errors at 500 km 45\degree orbit.}
 	\label{fig:mc45_500}
 \end{figure}
-%
-%
 \begin{figure}[h!]
 	\centering
 	\begin{subfigure}{.49\textwidth}
@@ -431,13 +404,12 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mcvel90}, it is apparent w
 	\caption{Monte Carlo position and velocity errors at 500 km polar (90\degree) orbit.}
 	\label{fig:mc90_500}
 \end{figure}
-%
+\clearpage
 \section{Conclusion}
 An extended Kalman filter was used to autonomously determine the accuracy in which a spacecraft's position and velocity could be estimated through camera observations of coastlines on Earth's surface.  If a coastline is visible, an image processing algorithm is able to match it with a database of known coastline locations.  These coordinates are input into the filter to determine the spacecraft's position and velocity steady state error.  The results in Table~\ref{summary} show that based on these simulations, spacecraft in polar orbits are likely to have smaller steady state errors in both position and velocity measurements.  Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images.  It is hoped that this can be implemented on-board a CubeSat launched as part of West Virginia University's proposed WATSON (WVU Advanced Technology Satellite for Optical Navigation) mission in the near future.
-%
-\clearpage
+
 \section{Acknowledgments}
-The authors thank Andrew Liounis of West Virginia University and Allison Willingham of NASA Goddard Space Flight Center for valuable feedback on this manuscript. This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
+The authors thank Dr. John O. Woods and Andrew Liounis of West Virginia University and Allison Willingham of NASA Goddard Space Flight Center for valuable feedback on this manuscript. This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{aiaa}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.5.24)  30 NOV 2014 11:32
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.5.24)  30 NOV 2014 22:11
 entering extended mode
 **AIAA*SciTech*Draft_Final.tex
 
@@ -365,112 +365,104 @@ aper/Michigan.png (PNG copy)>] <LOSgeometry.pdf, id=35, 722.7pt x 542.025pt>
 File: LOSgeometry.pdf Graphic file (type pdf)
 
 <use LOSgeometry.pdf>
-Package pdftex.def Info: LOSgeometry.pdf used on input line 263.
+Package pdftex.def Info: LOSgeometry.pdf used on input line 243.
 (pdftex.def)             Requested size: 352.3198pt x 197.9326pt.
  [5 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/LOSgeometry.
 pdf>] <contourplot.png, id=60, 1203.7472pt x 590.205pt>
 File: contourplot.png Graphic file (type png)
 
 <use contourplot.png>
-Package pdftex.def Info: contourplot.png used on input line 315.
+Package pdftex.def Info: contourplot.png used on input line 295.
 (pdftex.def)             Requested size: 1805.61636pt x 885.30533pt.
  [6 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/contourplot.
 png (PNG copy)>]
-Overfull \hbox (5.22607pt too wide) in paragraph at lines 332--341
+Overfull \hbox (5.22607pt too wide) in paragraph at lines 309--318
  [][] 
  []
 
 <MC_pos0.png, id=64, 586.88225pt x 543.89406pt>
 File: MC_pos0.png Graphic file (type png)
  <use MC_pos0.png>
-Package pdftex.def Info: MC_pos0.png used on input line 347.
+Package pdftex.def Info: MC_pos0.png used on input line 323.
 (pdftex.def)             Requested size: 230.18164pt x 213.3212pt.
 
 <MC_vel0.png, id=65, 590.205pt x 545.78906pt>
 File: MC_vel0.png Graphic file (type png)
  <use MC_vel0.png>
-Package pdftex.def Info: MC_vel0.png used on input line 353.
+Package pdftex.def Info: MC_vel0.png used on input line 329.
 (pdftex.def)             Requested size: 230.17902pt x 212.85687pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<MC_pos45.png, id=66, 586.88225pt x 560.71552pt>
+ [7 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos0.png 
+(PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_v
+el0.png (PNG copy)>] <MC_pos45.png, id=70, 586.88225pt x 560.71552pt>
 File: MC_pos45.png Graphic file (type png)
  <use MC_pos45.png>
-Package pdftex.def Info: MC_pos45.png used on input line 365.
+Package pdftex.def Info: MC_pos45.png used on input line 343.
 (pdftex.def)             Requested size: 230.18164pt x 219.91876pt.
 
-<MC_vel45.png, id=67, 590.205pt x 545.78906pt>
+<MC_vel45.png, id=71, 590.205pt x 545.78906pt>
 File: MC_vel45.png Graphic file (type png)
  <use MC_vel45.png>
-Package pdftex.def Info: MC_vel45.png used on input line 371.
+Package pdftex.def Info: MC_vel45.png used on input line 349.
 (pdftex.def)             Requested size: 230.17902pt x 212.85687pt.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<MC_pos90.png, id=68, 586.88225pt x 543.89406pt>
+<MC_pos90.png, id=72, 586.88225pt x 543.89406pt>
 File: MC_pos90.png Graphic file (type png)
  <use MC_pos90.png>
-Package pdftex.def Info: MC_pos90.png used on input line 383.
+Package pdftex.def Info: MC_pos90.png used on input line 360.
 (pdftex.def)             Requested size: 230.18164pt x 213.3212pt.
 
-<MC_vel90.png, id=69, 590.205pt x 545.78906pt>
+<MC_vel90.png, id=73, 590.205pt x 545.78906pt>
 File: MC_vel90.png Graphic file (type png)
  <use MC_vel90.png>
-Package pdftex.def Info: MC_vel90.png used on input line 389.
+Package pdftex.def Info: MC_vel90.png used on input line 366.
 (pdftex.def)             Requested size: 230.17902pt x 212.85687pt.
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<MC_pos45_500.png, id=70, 529.98pt x 608.2725pt>
+<MC_pos45_500.png, id=74, 529.98pt x 608.2725pt>
 File: MC_pos45_500.png Graphic file (type png)
  <use MC_pos45_500.png>
-Package pdftex.def Info: MC_pos45_500.png used on input line 402.
+Package pdftex.def Info: MC_pos45_500.png used on input line 377.
 (pdftex.def)             Requested size: 230.18361pt x 264.18802pt.
 
-<MC_vel45_500.png, id=71, 529.98pt x 608.2725pt>
+<MC_vel45_500.png, id=75, 529.98pt x 608.2725pt>
 File: MC_vel45_500.png Graphic file (type png)
  <use MC_vel45_500.png>
-Package pdftex.def Info: MC_vel45_500.png used on input line 408.
+Package pdftex.def Info: MC_vel45_500.png used on input line 383.
 (pdftex.def)             Requested size: 230.18361pt x 264.18802pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<MC_pos90_500.png, id=72, 529.98pt x 608.2725pt>
+<MC_pos90_500.png, id=76, 529.98pt x 608.2725pt>
 File: MC_pos90_500.png Graphic file (type png)
  <use MC_pos90_500.png>
-Package pdftex.def Info: MC_pos90_500.png used on input line 421.
+Package pdftex.def Info: MC_pos90_500.png used on input line 394.
 (pdftex.def)             Requested size: 230.18361pt x 264.18802pt.
 
-<MC_vel90_500.png, id=73, 529.98pt x 608.2725pt>
+<MC_vel90_500.png, id=77, 529.98pt x 608.2725pt>
 File: MC_vel90_500.png Graphic file (type png)
  <use MC_vel90_500.png>
-Package pdftex.def Info: MC_vel90_500.png used on input line 427.
+Package pdftex.def Info: MC_vel90_500.png used on input line 400.
 (pdftex.def)             Requested size: 230.18361pt x 264.18802pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[7] [8 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos0.p
-ng (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/M
-C_vel0.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech
- Paper/MC_pos45.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIA
-A SciTech Paper/MC_vel45.png (PNG copy)>] [9 <C:/Users/Miranda/Documents/GitHub
-/OpNavEKF/AIAA SciTech Paper/MC_pos90.png (PNG copy)> <C:/Users/Miranda/Documen
-ts/GitHub/OpNavEKF/AIAA SciTech Paper/MC_vel90.png (PNG copy)> <C:/Users/Mirand
-a/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos45_500.png (PNG copy)> <C:
-/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_vel45_500.png (P
-NG copy)>] [10 <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/M
-C_pos90_500.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA Sc
-iTech Paper/MC_vel90_500.png (PNG copy)>]
+[8
+
+ <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos45.png (P
+NG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_vel
+45.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Pap
+er/MC_pos90.png (PNG copy)> <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA Sc
+iTech Paper/MC_vel90.png (PNG copy)>] [9 <C:/Users/Miranda/Documents/GitHub/OpN
+avEKF/AIAA SciTech Paper/MC_pos45_500.png (PNG copy)> <C:/Users/Miranda/Documen
+ts/GitHub/OpNavEKF/AIAA SciTech Paper/MC_vel45_500.png (PNG copy)> <C:/Users/Mi
+randa/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_pos90_500.png (PNG copy)>
+ <C:/Users/Miranda/Documents/GitHub/OpNavEKF/AIAA SciTech Paper/MC_vel90_500.pn
+g (PNG copy)>]
 ("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
 aft_Final.bbl") 
 AED: lastpage setting LastPage
-[11
+[10
 
 ]
 ("C:\Users\Miranda\Documents\GitHub\OpNavEKF\AIAA SciTech Paper\AIAA SciTech Dr
@@ -482,7 +474,7 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  4194 strings out of 493706
  60252 string characters out of 3144577
- 139464 words of memory out of 3000000
+ 133459 words of memory out of 3000000
  7438 multiletter control sequences out of 15000+200000
  14375 words of font info for 55 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
@@ -506,9 +498,9 @@ y7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C
 :/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Progra
 m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti8.pfb><C:/Program Files/M
 iKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on "AIAA SciTech Draft_Final.pdf" (11 pages, 855739 bytes).
+Output written on "AIAA SciTech Draft_Final.pdf" (10 pages, 855048 bytes).
 PDF statistics:
- 157 PDF objects out of 1000 (max. 8388607)
+ 154 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  82 words of extra memory for PDF output out of 10000 (max. 10000000)
 
