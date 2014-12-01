@@ -299,21 +299,21 @@ For this simulation, it is important to ensure that coastlines will be visible b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Assessment of Navigation Filter Performance}
-A Monte Carlo analysis was run to assess the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  
+A Monte Carlo analysis was run to assess the performance of the EKF using only coastline observations.  In this case, the initial state was dispersed for each run in the Monte Carlo in a manner consistent with the initial state covariance (standard deviation of 500 m in position and 5 mm/s in velocity).  This allowed us to verify that the covariance predicted by the filter is statistically consistent within the Monte Carlo numerical results.  In each analysis, the camera was assumed to have a $30\degree $ FOV.
 
 This simulation was carried out for a total of 1,000 runs for each of five orbits (0\degree, 45\degree, and 90\degree, each at 1,000 km altitude, and 45\degree and 90\degree at 500 km altitude) to determine the steady state error achievable for each scenario.  The additional orbital parameters of these orbits, such as the right ascension of the ascending node, the argument of periapsis, and the true anomaly, were fixed at 0\degree for simplicity.  It is important to note that altering these values will change how often coastlines are able to be detected and results will deviate from those shown in Fig.~\ref{fig:contourplot}.  The following figures show that in all scenarios, the covariance predicted by the filter (gray lines) is consistent with the true covariance (black lines) and that the errors lie well within the 3$\sigma$ bounds of the covariance.
 \begin{table}[h]
 	\centering
-	\caption{Summary of position and velocity errors for specified orbits.}
+	\caption{Summary of position and velocity errors ($1\sigma$) for specified orbits.}
 	\label{summary}
 	\begin{tabular}{c c >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm} >{\centering\arraybackslash}m{1.6cm}}
 		\hhline{========}
-		Inclination & Altitude [km] & Along-track Steady State Position Error [km] & Cross-track Steady State Position Error [km] & Radial Steady State Position Error [km] & Along-track Steady State Velocity Error [m/s] & Cross-track Steady State Velocity Error [m/s] & Radial Steady State Velocity Error [m/s]\\ \hline
-		0\degree & 1,000 & 1.0 & 1.4 & 5.0 & 5.0 & 1.4 & 1.0 \\
-		45\degree & 1,000 & 1.0 & 1.4 & 5.0 & 5.0 & 1.4 & 1.0 \\
-		90\degree & 1,000 & 0.6 & 1.3 & 3.0 & 3.0 & 1.3 & 0.6 \\
-		45\degree & 500 & 1.0 & 1.4 & 4.5 & 4.8 & 1.5 & 1.1 \\
-		90\degree & 500 & 0.5 & 1.3 & 1.8 & 2.0 & 1.4 & 0.6 \\ \hhline{========}
+		Inclination & Altitude [km] & Along-track Position Error [km] & Cross-track Position Error [km] & Radial Position Error [km] & Along-track Velocity Error [m/s] & Cross-track Velocity Error [m/s] & Radial Velocity Error [m/s]\\ \hline
+		0\degree & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47 & 0.33 \\
+		45\degree & 1,000 & 0.33 & 0.47 & 1.67 & 1.67 & 0.47& 0.33 \\
+		90\degree & 1,000 & 0.20 & 0.43 & 1.0 & 1.0 & 0.43 & 0.20 \\
+		45\degree & 500 & 0.33 & 0.47 & 1.5 & 1.6 & 0.5 & 0.37 \\
+		90\degree & 500 & 0.17 & 0.43 & 0.6 & 0.67 & 0.47 & 0.20 \\ \hhline{========}
 	\end{tabular}
 \end{table}
 \begin{figure}[h!]
@@ -321,33 +321,33 @@ This simulation was carried out for a total of 1,000 runs for each of five orbit
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos0}
-		\caption{Position error [m] at i=0\degree.}
+		\caption{Position error [km] at i=0\degree.}
 		\label{fig:mcpos0}
 	\end{subfigure}
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel0}
-		\caption{Velocity error [mm/s] at i=0\degree.}
+		\caption{Velocity error [m/s] at i=0\degree.}
 		\label{fig:coastline}
 	\end{subfigure}
 	\caption{Monte Carlo position and velocity errors at 1,000 km equatorial (0\degree) orbit.}
 	\label{fig:mcvel0}
 \end{figure}
 \clearpage
-Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent where measurements were not present, i.e. where the camera was not able to detect coastlines.  However, in all simulated orbits, coastlines appear to have been available at all measurements, hence the constant convergence of the covariance towards steady state.  Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
+Table~\ref{summary} provides a summary of the results from the three orbits mentioned above, as well as an additional orbit at 45\degree inclination and 500 km altitude.  Results show that spacecrafts in polar orbits produce the smallest steady state errors.  This is likely due to the nearly full-global coverage and corresponding unique coastline points available for camera measurements.
 
 \begin{figure}[h!]
 	\centering
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos45}
-		\caption{Position error [m] at i=45\degree.}
+		\caption{Position error [km] at i=45\degree.}
 		\label{fig:mcpos45}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel45}
-		\caption{Velocity error [mm/s] at i=45\degree.}
+		\caption{Velocity error [m/s] at i=45\degree.}
 		\label{fig:coastline}
 	\end{subfigure}
 	\caption{Monte Carlo position and velocity errors at 1,000 km 45\degree orbit.}
@@ -358,13 +358,13 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent 
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos90}
-		\caption{Position rrror [m] at i=90\degree.}
+		\caption{Position error [km] at i=90\degree.}
 		\label{fig:mcpos90}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel90}
-		\caption{Velocity error [mm/s] at i=90\degree.}
+		\caption{Velocity error [m/s] at i=90\degree.}
 		\label{fig:mcvel90}
 	\end{subfigure}
 	\caption{Monte Carlo position and velocity errors at 1,000 km polar (90\degree) orbit.}
@@ -375,13 +375,13 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent 
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos45_500}
-		\caption{Position error [m] at i=45\degree.}
+		\caption{Position error [km] at i=45\degree.}
 		\label{fig:mcpos45_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel45_500}
-		\caption{Velocity error [mm/s] at i=45\degree.}
+		\caption{Velocity error [m/s] at i=45\degree.}
 		\label{fig:mcvel45_500}
 	\end{subfigure}
 	\caption{Monte Carlo position and velocity errors at 500 km 45\degree orbit.}
@@ -392,13 +392,13 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent 
 	\begin{subfigure}{.49\textwidth}
 		\centering
 		\includegraphics{MC_pos90_500}
-		\caption{Position error [m] at i=90\degree.}
+		\caption{Position error [km] at i=90\degree.}
 		\label{fig:mcposl90_500}
 	\end{subfigure}%
 	\begin{subfigure}{.49\textwidth} 
 		\centering
 		\includegraphics{MC_vel90_500}
-		\caption{Velocity error [mm/s] at i=90\degree.}
+		\caption{Velocity error [m/s] at i=90\degree.}
 		\label{fig:mcvel90_500}
 	\end{subfigure}
 	\caption{Monte Carlo position and velocity errors at 500 km polar (90\degree) orbit.}
@@ -406,7 +406,7 @@ Comparing Fig.~\ref{fig:mcvel0} through Fig.~\ref{fig:mc90_500}, it is apparent 
 \end{figure}
 \clearpage
 \section{Conclusion}
-An extended Kalman filter was used to autonomously determine the accuracy in which a spacecraft's position and velocity could be estimated through camera observations of coastlines on Earth's surface.  If a coastline is visible, an image processing algorithm is able to match it with a database of known coastline locations.  These coordinates are input into the filter to determine the spacecraft's position and velocity steady state error.  The results in Table~\ref{summary} show that based on these simulations, spacecraft in polar orbits are likely to have smaller steady state errors in both position and velocity measurements.  Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images.  It is hoped that this can be implemented on-board a CubeSat launched as part of West Virginia University's proposed WATSON (WVU Advanced Technology Satellite for Optical Navigation) mission in the near future.
+An extended Kalman filter was used to demonstrate how observations of coastlines on the Earth's surface may be used to autonomously estimate the position and velocity of a spacecraft. If a coastline is visible, an image processing algorithm may be able to detect such surface features and then match it with a database of known coastline locations (although the details of such image processing were not considered in this study). These coastline coordinates are input into the filter to estimate the spacecraft's position and velocity. The results in Table 1 show that, based on these preliminary simulations, spacecraft in high-inclination orbits are likely to have smaller steady state errors in both position and velocity measurements. This is likely due to more favorable observation geometry and measurement frequency, although a more detailed study is required. Future work related to this topic includes creating an appropriate image processing algorithm able to extract the required information from sample satellite images. It is the research team's hope that this type of approach can soon be demonstrated onboard a CubeSat, such as the WATSON (WVU Advanced Technology Satellite for Optical Navigation) mission concept being developed at West Virginia University.
 
 \section{Acknowledgments}
 The authors thank Dr. John O. Woods and Andrew Liounis of West Virginia University and Allison Willingham of NASA Goddard Space Flight Center for valuable feedback on this manuscript. This work was made possible by a NASA West Virginia Space Grant Consortium (WVSGC) 2014-2015 Research Initiation Grant. 
